@@ -9,6 +9,8 @@ import http from "http";
 import sessionConfig from "./config/sessionConfig.js";
 import { generalLimiter, authLimiter } from "./config/rateLimiters.js";
 import userRouter from "./routes/userRouter.js";
+import authRouter from "./routes/authRouter.js"
+
 
 const app = express();
 const server = http.createServer(app);
@@ -26,6 +28,7 @@ app.use(generalLimiter);
 app.use(helmet());
 
 //ROUTES should have the suffix for what they do to maintain clarity
+app.use("/auth", authRouter);
 app.use("/users", userRouter);
 
 // SOCKETS
