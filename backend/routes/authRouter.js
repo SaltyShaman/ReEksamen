@@ -32,7 +32,7 @@ router.post("/login", async (req, res) => {
         }
 
         res.json({
-            message: "Login succesfull",
+            message: "Login successfull",
             user: req.session.user
         });
 
@@ -55,5 +55,15 @@ router.post("/logout", (req, res) => {
         res.json({ message: "Logged out" });
     });
 })
+
+
+//protected route to see if logged in (to be used later on)
+router.post("/me", (req, res) => {
+
+    if (!req.session.user) {
+        return res.status(401).json({message: "Please login"})
+    }
+    res.json({ user: req.session.user });
+});
 
 export default router;

@@ -1,6 +1,8 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import db from "../database/connection.js"; 
+import { requireLogin } from "../middleware/requireLogin.js";
+
 
 /* use cases
 
@@ -12,7 +14,7 @@ const router = Router();
 
 
 //admin until line 64 . TODO: add login and require role
-router.get("/", async (req, res) => {
+router.get("/", requireLogin, async (req, res) => {
 
     try {
         const users = await db.all("SELECT id, username, role, created_at FROM users");
@@ -24,7 +26,7 @@ router.get("/", async (req, res) => {
 });
 
 //get by id
-router.get("/:id", async (req, res) => {
+router.get("/:id", requireLogin, async (req, res) => {
     
     try {
         const user = await db.get(
@@ -40,7 +42,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //admin delete
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireLogin, async (req, res) => {
     
     try {
         const userId = req.params.id;
@@ -64,10 +66,13 @@ router.delete("/:id", async (req, res) => {
 });
 
 //user own delete
-router.delete("/me", async (req, res) => {
+router.delete("/me", requireLogin, async (req, res) => {
 
     try {
-        const userId = req.body.userId; //change to session after implementation
+
+        const userId = req.session.user.id;
+        const user = await db.get("SELECT * FROM users WHERE id = ?", [userId]);
+        
           if (!user) {
                           return res.status(404).json({ error: "User not found"});
             }    
@@ -82,15 +87,17 @@ router.delete("/me", async (req, res) => {
 });
 
 //change password
-router.put("/me", async (req, res) => {
+router.put("/me", requireLogin, async (req, res) => {
 
     try {
-         const userId = req.body.userId; //change to session after implementation
+         const userId = req.session.user.id;
          const { newPassword } = req.body;
 
-         if (!userId) {
-                     return res.status(404).json({ error: "User not found"});
-        }  
+         const user = await db.get("SELECT * FROM users WHERE id = ?", [userId]);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         await db.run("UPDATE users SET password_hash = ? WHERE id = ?", [hashedPassword, userId]);
 
