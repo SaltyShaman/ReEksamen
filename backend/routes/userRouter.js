@@ -8,13 +8,12 @@ import { requireAdmin } from "../middleware/requireAdmin.js";
 /* use cases
 
     admin: can see all users (done), delete user (done) and access user by id (done) and change password
-    user:  and terminate his own account (done) and register a new user and change password (done)
+    user:  and terminate his own account (done) and register a new user (without login) and change password (done)
 
 */
 const router = Router();
 
 
-//admin until line 64 . TODO: add login and require role
 router.get("/", requireLogin, requireAdmin, async (req, res) => {
 
     try {

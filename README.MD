@@ -2,7 +2,7 @@
 
 ## Projekt: Biograf med en række film, lokaler og sæder
 
-TO-DO: requireAdmin til admin endpoints på userRouter
+TO-DO: 
         sockets til userRouter (afer socket is setup)
 
 
