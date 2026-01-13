@@ -2,6 +2,7 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import db from "../database/connection.js"; 
 import { requireLogin } from "../middleware/requireLogin.js";
+import { requireAdmin } from "../middleware/requireAdmin.js";
 
 
 /* use cases
@@ -14,7 +15,7 @@ const router = Router();
 
 
 //admin until line 64 . TODO: add login and require role
-router.get("/", requireLogin, async (req, res) => {
+router.get("/", requireLogin, requireAdmin, async (req, res) => {
 
     try {
         const users = await db.all("SELECT id, username, role, created_at FROM users");
@@ -26,7 +27,7 @@ router.get("/", requireLogin, async (req, res) => {
 });
 
 //get by id
-router.get("/:id", requireLogin, async (req, res) => {
+router.get("/:id", requireLogin, requireAdmin, async (req, res) => {
     
     try {
         const user = await db.get(
@@ -42,7 +43,7 @@ router.get("/:id", requireLogin, async (req, res) => {
 });
 
 //admin delete
-router.delete("/:id", requireLogin, async (req, res) => {
+router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
     
     try {
         const userId = req.params.id;

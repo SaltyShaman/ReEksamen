@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 if (deleteMode) {
 
-    const now = new Date().toISOString();
+    const now = new Date().toISOString(); //used for seeding purposes
 
     const hashedAdmin = await bcrypt.hash('admin123', 10);
     
