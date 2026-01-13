@@ -4,6 +4,8 @@ import db from "../database/connection.js";
 
 const router = Router();
 
+
+//login
 router.post("/login", async (req, res) => {
 
     try {
@@ -41,6 +43,17 @@ router.post("/login", async (req, res) => {
         }
 });
 
+//logout
+router.post("/logout", (req, res) => {
 
+    if (!req.session.user) {
+        return res.status(401).json({error: "You are not logged in"})
+    }
+
+    req.session.destroy(err => {
+        if (err) return res.status(500).json({ error: "Logout failed" });
+        res.json({ message: "Logged out" });
+    });
+})
 
 export default router;
