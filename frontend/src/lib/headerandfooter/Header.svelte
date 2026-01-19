@@ -37,6 +37,12 @@
     <div>
         <a href="/dashboard">Home</a>
     </div>
+
+    <div>
+        <a href="/user/create">Sign up</a>
+    </div>
+
+
     <div>
         {#if user}
             <span>Welcome, {user.username}</span>
