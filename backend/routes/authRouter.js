@@ -58,7 +58,7 @@ router.post("/logout", (req, res) => {
 
 
 //protected route to see if logged in (to be used later on)
-router.post("/me", (req, res) => {
+router.get("/me", (req, res) => {
 
     if (!req.session.user) {
         return res.status(401).json({message: "Please login"})
