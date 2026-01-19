@@ -1,7 +1,8 @@
 export function requireAdmin(req, res, next) {
 
 
-    //s
+    //use a session validation here to avoid sending another request to requirelogin
+    //basicly choose if you want it as a function parameter or a direct validation in the function
     if (!req.session.user) {
         res.status(401).json({message : "You are not logged in"});
     }
