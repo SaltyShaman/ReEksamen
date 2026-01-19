@@ -18,7 +18,7 @@ const server = http.createServer(app);
 
 // Middleware
 app.use(cors({
-  origin: 'http://127.0.0.1:5500', //vanilla vs code index.html setup
+  origin: 'http://localhost:5173',
   credentials: true
 }));
 
