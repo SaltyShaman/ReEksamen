@@ -4,6 +4,7 @@ import db from "../database/connection.js";
 import { requireLogin } from "../middleware/requireLogin.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
 
+import { emitUserCreated } from "../sockets/events/userEvents.js";
 
 /* use cases
 
@@ -126,7 +127,10 @@ router.post("/register", async (req, res) => {
             "INSERT INTO users (username, password_hash, role, created_at) VALUES (?, ?, ?, ?)",
                  [username, hashedPassword, "USER", new Date().toISOString()]); //important: you can only register as a new user
         
-        res.status(201).json({ message: "User registered successfully", id: result.lastID });
+        const createdUser = { id: result.lastID, username, role: "USER" }; //build the object to broadcast through websocket
+
+        emitUserCreated(createdUser);
+        res.status(201).json({ message: "User registered successfully", ...createdUser });
     } catch (err) {
         console.error(err);
         res.status(500).json({error: "Failed to register user"});

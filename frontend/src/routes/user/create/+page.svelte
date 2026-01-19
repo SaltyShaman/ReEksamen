@@ -1,7 +1,8 @@
 <script>
+    import { users } from "$lib/stores/users.js";
+
     let username = "";
     let password = "";
-
     let errorMessage = "";
     let successMessage = "";
 
@@ -19,16 +20,20 @@
                 body: JSON.stringify(userData)
             });
 
+            const data = await response.json(); // parse JSON first
+
             if (!response.ok) {
-                const data = await response.json();
-                // show backend error (username taken, etc.)
+                // Show backend errors (username taken, etc.)
                 errorMessage = data.message || data.error || "Failed to create user";
                 return;
             }
 
-            const data = await response.json();
+            // Update store locally
+            users.update(list => [...list, { id: data.id, username: username, role: "USER" }]);
+
             successMessage = `User "${username}" created successfully!`;
 
+            // Reset form
             username = "";
             password = "";
 
