@@ -21,7 +21,8 @@
 
             if (!response.ok) {
                 const data = await response.json();
-                errorMessage = data.message || "Failed to create user";
+                // show backend error (username taken, etc.)
+                errorMessage = data.message || data.error || "Failed to create user";
                 return;
             }
 
@@ -49,10 +50,8 @@
 
         <div>
             <label for="password">Password:</label>
-            <input id="password" bind:value={password} required />
+            <input id="password" type="password" bind:value={password} required />
         </div>
-
-        <div>
 
         {#if errorMessage}
             <p style="color:red">{errorMessage}</p>
