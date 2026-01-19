@@ -26,8 +26,7 @@
             const data = await response.json();
             console.log("Logged in user:", data.user);
 
-            // Redirect to home page after login
-            window.location.href = "/";
+            window.location.href = "/dashboard";
         } catch (err) {
             console.error(err);
             errorMessage = "An error occurred during login";
