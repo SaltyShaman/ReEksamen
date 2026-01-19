@@ -4,6 +4,9 @@
 
 TO-DO: 
         sockets til userRouter (afer socket is setup)
+        header navigation
+        logout function frontend
+        dashboard for admin and user (diffrentiated views)
 
 
 basic ER diagrams:
