@@ -26,7 +26,7 @@
             const data = await response.json();
             console.log("Logged in user:", data.user);
 
-            window.location.href = "/dashboard"; // important: it has to use the folder name to properly route
+            window.location.href = "/dashboard"; // important: it has to use the folder name
         } catch (err) {
             console.error(err);
             errorMessage = "An error occurred during login";
