@@ -22,10 +22,12 @@ app.use(cors({
   credentials: true
 }));
 
+
 app.use(express.json());
 app.use(sessionConfig); 
 app.use(generalLimiter);
 app.use(helmet());
+
 
 //ROUTES should have the suffix for what they do to maintain clarity
 app.use("/auth", authRouter);

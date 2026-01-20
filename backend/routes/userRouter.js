@@ -42,6 +42,35 @@ router.get("/:id", requireLogin, requireAdmin, async (req, res) => {
     }
 });
 
+//user self delete
+router.delete("/me", requireLogin, async (req, res) => {
+
+    try {
+        const { id: userId, role } = req.session.user;
+
+        const user = await db.get(
+            "SELECT * FROM users WHERE id = ?",
+            [userId]
+        );
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        await db.run(
+            "DELETE FROM users WHERE id = ?",
+            [userId]
+        );
+
+        res.json({ message: "Your user has now been successfully deleted" });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Delete failed" });
+    }
+});
+
+
 //admin delete
 router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
     
@@ -66,29 +95,9 @@ router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
     }
 });
 
-//user own delete
-router.delete("/me", requireLogin, async (req, res) => {
-
-    try {
-
-        const userId = req.session.user.id;
-        const user = await db.get("SELECT * FROM users WHERE id = ?", [userId]);
-        
-          if (!user) {
-                          return res.status(404).json({ error: "User not found"});
-            }    
-            
-        await db.run("DELETE FROM users WHERE id = ?", [userId]);
-
-        res.json({ message: "Your user has now been sucessfully deleted"});
-    } catch(err){
-        console.error(err);
-        res.status(500).json({error: "Delete failed"});
-    }
-});
 
 //change password
-router.put("/me", requireLogin, async (req, res) => {
+router.put("/me/password", requireLogin, async (req, res) => {
 
     try {
          const userId = req.session.user.id;

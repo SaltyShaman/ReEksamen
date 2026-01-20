@@ -34,12 +34,21 @@
 </script>
 
 <header>
+
+    <div>
+        <a href="/user/create">Sign up</a>
+    </div>
+
     <div>
         <a href="/dashboard">Home</a>
     </div>
 
     <div>
-        <a href="/user/create">Sign up</a>
+        <a href="/user/change-password">Change Password</a>
+    </div>
+
+    <div>
+        <a href="/user/delete">Delete account?</a>
     </div>
 
 

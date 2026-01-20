@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 
 let io;
 
+//login or session required for this socket to work. Use local sockets or a work around for create user
 export function initSocket(server) {
     io = new Server(server, {
         cors: { origin: "http://localhost:5173" } 

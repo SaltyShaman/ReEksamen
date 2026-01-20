@@ -1,6 +1,6 @@
 import { getIO } from "./socketIOInstance.js";
 
-// helped function to send data from the backend to the frontend
+// helper function to send data from the backend to the frontend
 export function broadcast(event, data) {
     try {
         const io = getIO();
