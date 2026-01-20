@@ -1,72 +1,44 @@
-<main>
-    <h1>Search User (Admin)</h1>
-
-    <form on:submit={handleSearch} style="position: relative;">
-        <input
-            type="text"
-            placeholder="Enter username"
-            bind:value={searchName}
-            autocomplete="off"
-        />
-        <button type="submit">Search</button>
-
-        {#if suggestions.length > 0}
-            <div class="suggestions">
-                {#each suggestions as s}
-                    <div class="suggestion-item" on:click={() => selectSuggestion(s.username)}>
-                        {s.username}
-                    </div>
-                {/each}
-            </div>
-        {/if}
-    </form>
-
-    {#if errorMessage}
-        <p style="color:red">{errorMessage}</p>
-    {/if}
-
-    {#if user}
-        <h2>User Found:</h2>
-        <div>
-            <p>ID: {user.id}</p>
-            <p>Username: {user.username}</p>
-            <p>Role: {user.role}</p>
-            <p>Created At: {user.created_at}</p>
-
-            <button on:click={() => deleteUser(user.id)}>Delete User</button>
-        </div>
-    {/if}
-</main>
-
 <script>
     import { onMount } from "svelte";
     import { users, initUserSocket } from "$lib/stores/users.js";
+    import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
 
     let searchName = "";
     let user = null;
     let errorMessage = "";
     let suggestions = [];
+    let currentUser = null;
+    let authChecked = false; // to know when we finished checking auth
 
     // Initialize socket for live updates
     initUserSocket();
 
     onMount(async () => {
-        try {
-            const res = await fetch("http://localhost:8080/users", { credentials: "include" });
-            const data = await res.json();
+        // Fetch authenticated user
+        await fetchMe();
+        currentUser = $authUser;
+        authChecked = true;
 
-            if (!res.ok) {
-                errorMessage = data.error || "Failed to load users";
-                return;
+        if ($isLoggedIn && currentUser.role === "ADMIN") {
+            // Fetch initial list of users for suggestions/search
+            try {
+                const res = await fetch("http://localhost:8080/users", { credentials: "include" });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    errorMessage = data.error || "Failed to load users";
+                    return;
+                }
+
+                users.set(data.users);
+            } catch (err) {
+                console.error(err);
+                errorMessage = "Server error while loading users";
             }
-
-            users.set(data.users);
-        } catch (err) {
-            console.error(err);
-            errorMessage = "Server error while loading users";
         }
     });
 
+    // Update suggestions as user types
     $: if (searchName) {
         suggestions = $users
             .filter(u => u.username.toLowerCase().startsWith(searchName.toLowerCase()))
@@ -145,3 +117,51 @@
         }
     }
 </script>
+
+<main>
+    {#if !authChecked}
+        <p>Checking authentication...</p>
+    {:else if !$isLoggedIn}
+        <p>You must log in to view this page.</p>
+    {:else if currentUser.role !== "ADMIN"}
+        <p>You are not authorized to view this page.</p>
+    {:else}
+        <h1>Search User (Admin)</h1>
+
+        <form on:submit={handleSearch} style="position: relative;">
+            <input
+                type="text"
+                placeholder="Enter username"
+                bind:value={searchName}
+                autocomplete="off"
+            />
+            <button type="submit">Search</button>
+
+            {#if suggestions.length > 0}
+                <div class="suggestions">
+                    {#each suggestions as s}
+                        <div class="suggestion-item" on:click={() => selectSuggestion(s.username)}>
+                            {s.username}
+                        </div>
+                    {/each}
+                </div>
+            {/if}
+        </form>
+
+        {#if errorMessage}
+            <p style="color:red">{errorMessage}</p>
+        {/if}
+
+        {#if user}
+            <h2>User Found:</h2>
+            <div>
+                <p>ID: {user.id}</p>
+                <p>Username: {user.username}</p>
+                <p>Role: {user.role}</p>
+                <p>Created At: {user.created_at}</p>
+
+                <button on:click={() => deleteUser(user.id)}>Delete User</button>
+            </div>
+        {/if}
+    {/if}
+</main>
