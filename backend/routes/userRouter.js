@@ -14,7 +14,7 @@ import { emitUserCreated, emitUserUpdated, emitUserDeleted } from "../sockets/ev
 */
 const router = Router();
 
-
+//see all users (admin)
 router.get("/", requireLogin, requireAdmin, async (req, res) => {
 
     try {
@@ -26,7 +26,7 @@ router.get("/", requireLogin, requireAdmin, async (req, res) => {
     }
 });
 
-//get by id
+//get by id (admin)
 router.get("/:id", requireLogin, requireAdmin, async (req, res) => {
     
     try {
@@ -55,6 +55,10 @@ router.delete("/me", requireLogin, async (req, res) => {
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
+        }
+
+        if (user.role === "ADMIN") {
+            return res.status(403).json({ error: "Admins cannot be deleted through the UI" });
         }
 
         await db.run(
@@ -92,6 +96,10 @@ router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
 
             if (!user) {
                     return res.status(404).json({ error: "User not found"});
+            }
+
+            if (user.role === "ADMIN") {
+                return res.status(403).json({ error: "Admins cannot be deleted through the UI" });
             }
 
             await db.run("DELETE FROM users WHERE id = ?", [userId]);
