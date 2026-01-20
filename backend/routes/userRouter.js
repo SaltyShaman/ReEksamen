@@ -4,7 +4,7 @@ import db from "../database/connection.js";
 import { requireLogin } from "../middleware/requireLogin.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
 
-import { emitUserCreated } from "../sockets/events/userEvents.js";
+import { emitUserCreated, emitUserUpdated, emitUserDeleted } from "../sockets/events/userEvents.js";
 
 /* use cases
 
@@ -62,12 +62,15 @@ router.delete("/me", requireLogin, async (req, res) => {
             [userId]
         );
 
+        emitUserDeleted(userId);
+
         // Destroy the session (force a logout)
         req.session.destroy(err => {
             if (err) {
                 console.error(err);
                 return res.status(500).json({ error: "Failed to delete session" });
             }
+
             res.json({ message: "Your account has been successfully deleted" });
         });
 
@@ -96,6 +99,8 @@ router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
             res.json({ message: `User with id ${userId} successfully deleted` });
 
 
+            
+
     } catch (err){
         console.error(err);
         res.status(500).json({ error: "Failed to delete user" });
@@ -117,6 +122,8 @@ router.put("/me/password", requireLogin, async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         await db.run("UPDATE users SET password_hash = ? WHERE id = ?", [hashedPassword, userId]);
+
+         emitUserUpdated({ id: userId, username: user.username, role: user.role });
 
         res.json({message: "Password succesfully updated"});
     } catch (err) {

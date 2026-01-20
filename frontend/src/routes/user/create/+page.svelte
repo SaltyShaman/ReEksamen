@@ -1,6 +1,4 @@
 <script>
-    import { users } from "$lib/stores/users.js";
-
     let username = "";
     let password = "";
     let errorMessage = "";
@@ -20,7 +18,7 @@
                 body: JSON.stringify(userData)
             });
 
-            const data = await response.json(); // parse JSON first
+            const data = await response.json();
 
             if (!response.ok) {
                 // Show backend errors (username taken, etc.)
@@ -28,20 +26,15 @@
                 return;
             }
 
-            // Update store locally
-            users.update(list => [...list, { id: data.id, username: username, role: "USER" }]);
-
-            successMessage = `User "${username}" created successfully! Redirecting to login page`;
+            successMessage = `User "${username}" created successfully! Redirecting to login page...`;
 
             // Reset form
             username = "";
             password = "";
 
-        setTimeout(() => {
-            window.location.href = "/login";
-        }, 5000); 
-
-
+            setTimeout(() => {
+                window.location.href = "/login";
+            }, 3000); // 3 seconds
         } catch (err) {
             console.error(err);
             errorMessage = "An error occurred while creating the user";

@@ -1,8 +1,7 @@
-import "dotenv/config"; //henter .env filen
+import "dotenv/config"; //get .env file
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
-import { Server } from "socket.io";
 import http from "http";
 
 
@@ -10,7 +9,7 @@ import sessionConfig from "./config/sessionConfig.js";
 import { generalLimiter, authLimiter } from "./config/rateLimiters.js";
 import userRouter from "./routes/userRouter.js";
 import authRouter from "./routes/authRouter.js"
-
+import { initSocket } from "./sockets/socketIOInstance.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -34,10 +33,7 @@ app.use("/auth", authRouter);
 app.use("/users", userRouter);
 
 // SOCKETS
-const io = new Server(server, {
-  cors: { origin: 'http://localhost:5173', credentials: true }
-});
-
+const io = initSocket(server);
 
 // Start server
 const PORT = process.env.PORT || 8080;

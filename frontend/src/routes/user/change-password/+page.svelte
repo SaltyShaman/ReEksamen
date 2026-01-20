@@ -1,7 +1,12 @@
 <script>
+
+    import { initUserSocket } from "$lib/stores/users.js";
+
     let newPassword = "";
     let errorMessage = "";
     let successMessage = "";
+
+    initUserSocket();
 
     async function handleChangePassword(e) {
         e.preventDefault();

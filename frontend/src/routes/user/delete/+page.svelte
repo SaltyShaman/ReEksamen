@@ -1,5 +1,7 @@
 <script>
 
+    import { initUserSocket } from "$lib/stores/users.js";
+
     let errorMessage = "";
     let successMessage = "";
 
