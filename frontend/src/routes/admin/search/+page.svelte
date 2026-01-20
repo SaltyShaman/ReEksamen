@@ -5,6 +5,7 @@
     let searchName = "";
     let user = null;
     let errorMessage = "";
+    let suggestions = [];
 
     // Initialize socket for live updates
     initUserSocket();
@@ -29,6 +30,15 @@
         }
     });
 
+    // Update suggestions as the user types
+    $: if (searchName) {
+        suggestions = $users
+            .filter(u => u.username.toLowerCase().startsWith(searchName.toLowerCase()))
+            .slice(0, 10); // limit to 10 suggestions
+    } else {
+        suggestions = [];
+    }
+
     async function handleSearch(e) {
         e.preventDefault();
         user = null;
@@ -39,11 +49,7 @@
             return;
         }
 
-        // Subscribe to the store temporarily to get current users
-        let currentUsers;
-        users.subscribe(list => currentUsers = list)(); // immediately unsubscribe
-
-        const matchedUser = currentUsers.find(u =>
+        const matchedUser = $users.find(u =>
             u.username.toLowerCase() === searchName.toLowerCase()
         );
 
@@ -65,25 +71,41 @@
             }
 
             user = data.user;
+            suggestions = []; // clear suggestions after search
         } catch (err) {
             console.error(err);
             errorMessage = "Server error while fetching user";
         }
+    }
+
+    function selectSuggestion(username) {
+        searchName = username;
+        suggestions = [];
     }
 </script>
 
 <main>
     <h1>Search User (Admin)</h1>
 
-    <form on:submit={handleSearch}>
-        <input
-            type="text"
-            placeholder="Enter username"
-            bind:value={searchName}
-            required
-        />
-        <button type="submit">Search</button>
-    </form>
+<form on:submit={handleSearch} style="position: relative;">
+    <input
+        type="text"
+        placeholder="Enter username"
+        bind:value={searchName}
+        autocomplete="off"
+    />
+    <button type="submit">Search</button>
+
+    {#if suggestions.length > 0}
+        <div class="suggestions">
+            {#each suggestions as s}
+                <div class="suggestion-item" on:click={() => selectSuggestion(s.username)}>
+                    {s.username}
+                </div>
+            {/each}
+        </div>
+    {/if}
+</form>
 
     {#if errorMessage}
         <p style="color:red">{errorMessage}</p>
@@ -99,3 +121,5 @@
         </ul>
     {/if}
 </main>
+
+
