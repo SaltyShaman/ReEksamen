@@ -42,7 +42,7 @@ router.get("/:id", requireLogin, requireAdmin, async (req, res) => {
     }
 });
 
-//user self delete
+//user self delete (has to be before admin delete if in same file)
 router.delete("/me", requireLogin, async (req, res) => {
 
     try {
@@ -62,7 +62,14 @@ router.delete("/me", requireLogin, async (req, res) => {
             [userId]
         );
 
-        res.json({ message: "Your user has now been successfully deleted" });
+        // Destroy the session (force a logout)
+        req.session.destroy(err => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: "Failed to delete session" });
+            }
+            res.json({ message: "Your account has been successfully deleted" });
+        });
 
     } catch (err) {
         console.error(err);

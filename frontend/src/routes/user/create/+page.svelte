@@ -31,11 +31,16 @@
             // Update store locally
             users.update(list => [...list, { id: data.id, username: username, role: "USER" }]);
 
-            successMessage = `User "${username}" created successfully!`;
+            successMessage = `User "${username}" created successfully! Redirecting to login page`;
 
             // Reset form
             username = "";
             password = "";
+
+        setTimeout(() => {
+            window.location.href = "/login";
+        }, 5000); 
+
 
         } catch (err) {
             console.error(err);
