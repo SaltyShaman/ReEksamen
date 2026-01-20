@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 
 let io;
+let debug = false
 
 //login or session required for this socket to work. Use local sockets or a work around for create user
 
