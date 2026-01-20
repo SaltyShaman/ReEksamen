@@ -96,6 +96,8 @@ router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
 
             await db.run("DELETE FROM users WHERE id = ?", [userId]);
 
+
+            emitUserDeleted(userId);
             res.json({ message: `User with id ${userId} successfully deleted` });
 
 
