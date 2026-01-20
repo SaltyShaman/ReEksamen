@@ -1,35 +1,33 @@
 <script>
     import { onMount } from "svelte";
+    import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
 
-    let user = null;
+    let currentUser = null;
+    let authChecked = false; // track if auth is loaded
     let error = "";
 
     onMount(async () => {
-        try {
-            const response = await fetch("http://localhost:8080/auth/me", {
-                credentials: "include" // must include session cookie
-            });
+        await fetchMe();
+        currentUser = $authUser;
+        authChecked = true;
 
-            if (!response.ok) {
-                // not logged in → redirect to login page
-                window.location.href = "/login";
-                return;
-            }
-
-            const data = await response.json();
-            user = data.user;
-        } catch (err) {
-            console.error(err);
-            window.location.href = "/login";
+        if (!$isLoggedIn) {
+            error = "You must log in to access the dashboard.";
         }
     });
 </script>
 
 <main>
-    {#if user}
-        <h1>Welcome, {user.username}!</h1>
+    {#if !authChecked}
+        <p>Checking authentication...</p>
 
-        {#if user && user.role === "ADMIN"}
+    {:else if !$isLoggedIn}
+        <p style="color:red">{error}</p>
+
+    {:else}
+        <h1>Welcome, {currentUser.username}!</h1>
+
+        {#if currentUser.role === "ADMIN"}
             <section>
                 <h2>Admin Panel</h2>
                 <button on:click={() => window.location.href = "/admin/users"}>
@@ -41,7 +39,8 @@
             </section>
         {/if}
 
-    {:else}
-        <p>Checking login...</p>
+        {#if currentUser.role !== "ADMIN"}
+            <p>This is your standard dashboard.</p>
+        {/if}
     {/if}
 </main>

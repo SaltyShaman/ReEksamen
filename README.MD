@@ -4,7 +4,23 @@
 
 TO-DO: 
         
-        authentication for frontend roles for USER entity
+
+        movie entity
+
+
+        authentication for frontend roles for USER entity (as project is being built)
+
+        user dashboard with reservations by movie. full details with movie reservations
+
+
+
+        admin dashboard with more options:
+                movie dashboard. CRUD <---a movie attached to hall>
+                hall dashboard. CRUD <---seat attached to each hall>
+                seat dashboard and overview
+
+
+
         
 
         dashboard for admin and user (diffrentiated views) admin done for user entity
