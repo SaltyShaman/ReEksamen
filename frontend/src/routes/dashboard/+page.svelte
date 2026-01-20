@@ -28,6 +28,19 @@
 <main>
     {#if user}
         <h1>Welcome, {user.username}!</h1>
+
+        {#if user && user.role === "ADMIN"}
+            <section>
+                <h2>Admin Panel</h2>
+                <button on:click={() => window.location.href = "/admin/users"}>
+                    Full User List
+                </button>
+                <button on:click={() => window.location.href = "/admin/search"}>
+                    Search Users
+                </button>
+            </section>
+        {/if}
+
     {:else}
         <p>Checking login...</p>
     {/if}
