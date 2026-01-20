@@ -43,3 +43,6 @@ seats -> hall
 
 movie -> hall
 
+
+KNOWN BUGS:
+admin list delte -> if you log in as admin and delete your own user you are not visable on the list until refresh

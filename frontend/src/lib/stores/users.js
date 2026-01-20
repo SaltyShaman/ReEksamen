@@ -6,6 +6,7 @@ export const users = writable([]);
 
 // Single Socket.IO instance
 let socket;
+let debug = false; // set to true if you want console logs
 
 /**
  * Initialize the Socket.IO connection and event listeners
@@ -17,55 +18,48 @@ export function initUserSocket() {
         withCredentials: true // allows cookies/session
     });
 
-    socket.on("connect", () => console.log("User socket connected"));
-
-    // Listen for user CRUD events from backend
+    if (debug) {
+        socket.on("connect", () => console.log("User socket connected"));
+        socket.on("disconnect", () => console.log("User socket disconnected"));
+    }
 
     // New user created
     socket.on("user-created", (user) => {
-        console.log("user-created event:", user);
-        users.update(list => {
-            // avoid duplicates
-            if (!list.some(u => u.id === user.id)) {
-                return [...list, user];
-            }
-            return list;
-        });
+        users.update(list => list.some(u => u.id === user.id) ? list : [...list, user]);
     });
 
     // User updated
     socket.on("user-updated", (updatedUser) => {
-        console.log("user-updated event:", updatedUser);
-        users.update(list =>
-            list.map(u => u.id === updatedUser.id ? updatedUser : u)
-        );
+        users.update(list => list.map(u => u.id === updatedUser.id ? updatedUser : u));
     });
 
-socket.on("user-deleted", ({ id }) => {
-    console.log("User deleted event received:", id);
-    users.update(list => {
-        const newList = [...list.filter(u => u.id !== id)];
-        console.log("Updated users list:", newList);
-        return newList;
+    // User deleted
+    socket.on("user-deleted", ({ id }) => {
+        users.update(list => list.filter(u => u.id !== id));
     });
-});
-
-
-    socket.on("disconnect", () => console.log("User socket disconnected"));
 }
 
 /**
  * Optional helper functions to emit events to backend if needed
  */
 export function createUser(userData) {
-    socket.emit("create-user", userData);
+    socket?.emit("create-user", userData);
 }
 
 export function updateUser(userData) {
-    socket.emit("update-user", userData);
+    socket?.emit("update-user", userData);
 }
 
 export function deleteUser(userId) {
-    socket.emit("delete-user", { id: userId });
+    socket?.emit("delete-user", { id: userId });
 }
 
+/**
+ * Optional: disconnect socket when not needed
+ */
+export function destroyUserSocket() {
+    if (socket) {
+        socket.disconnect();
+        socket = null;
+    }
+}
