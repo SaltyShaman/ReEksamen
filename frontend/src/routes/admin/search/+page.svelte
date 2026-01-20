@@ -1,3 +1,43 @@
+<main>
+    <h1>Search User (Admin)</h1>
+
+    <form on:submit={handleSearch} style="position: relative;">
+        <input
+            type="text"
+            placeholder="Enter username"
+            bind:value={searchName}
+            autocomplete="off"
+        />
+        <button type="submit">Search</button>
+
+        {#if suggestions.length > 0}
+            <div class="suggestions">
+                {#each suggestions as s}
+                    <div class="suggestion-item" on:click={() => selectSuggestion(s.username)}>
+                        {s.username}
+                    </div>
+                {/each}
+            </div>
+        {/if}
+    </form>
+
+    {#if errorMessage}
+        <p style="color:red">{errorMessage}</p>
+    {/if}
+
+    {#if user}
+        <h2>User Found:</h2>
+        <div>
+            <p>ID: {user.id}</p>
+            <p>Username: {user.username}</p>
+            <p>Role: {user.role}</p>
+            <p>Created At: {user.created_at}</p>
+
+            <button on:click={() => deleteUser(user.id)}>Delete User</button>
+        </div>
+    {/if}
+</main>
+
 <script>
     import { onMount } from "svelte";
     import { users, initUserSocket } from "$lib/stores/users.js";
@@ -10,12 +50,9 @@
     // Initialize socket for live updates
     initUserSocket();
 
-    // Fetch initial users for searching
     onMount(async () => {
         try {
-            const res = await fetch("http://localhost:8080/users", {
-                credentials: "include"
-            });
+            const res = await fetch("http://localhost:8080/users", { credentials: "include" });
             const data = await res.json();
 
             if (!res.ok) {
@@ -30,11 +67,10 @@
         }
     });
 
-    // Update suggestions as the user types
     $: if (searchName) {
         suggestions = $users
             .filter(u => u.username.toLowerCase().startsWith(searchName.toLowerCase()))
-            .slice(0, 10); // limit to 10 suggestions
+            .slice(0, 10);
     } else {
         suggestions = [];
     }
@@ -62,7 +98,6 @@
             const res = await fetch(`http://localhost:8080/users/${matchedUser.id}`, {
                 credentials: "include"
             });
-
             const data = await res.json();
 
             if (!res.ok) {
@@ -71,7 +106,7 @@
             }
 
             user = data.user;
-            suggestions = []; // clear suggestions after search
+            suggestions = [];
         } catch (err) {
             console.error(err);
             errorMessage = "Server error while fetching user";
@@ -82,44 +117,31 @@
         searchName = username;
         suggestions = [];
     }
+
+    async function deleteUser(userId) {
+        if (!confirm("Are you sure you want to delete this user?")) return;
+
+        try {
+            const res = await fetch(`http://localhost:8080/users/${userId}`, {
+                method: "DELETE",
+                credentials: "include"
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(data.error || "Failed to delete user");
+                return;
+            }
+
+            // Reset local view
+            user = null;
+            searchName = "";
+            suggestions = [];
+
+            // The users store will auto-update via the socket
+        } catch (err) {
+            console.error(err);
+            alert("Server error while deleting user");
+        }
+    }
 </script>
-
-<main>
-    <h1>Search User (Admin)</h1>
-
-<form on:submit={handleSearch} style="position: relative;">
-    <input
-        type="text"
-        placeholder="Enter username"
-        bind:value={searchName}
-        autocomplete="off"
-    />
-    <button type="submit">Search</button>
-
-    {#if suggestions.length > 0}
-        <div class="suggestions">
-            {#each suggestions as s}
-                <div class="suggestion-item" on:click={() => selectSuggestion(s.username)}>
-                    {s.username}
-                </div>
-            {/each}
-        </div>
-    {/if}
-</form>
-
-    {#if errorMessage}
-        <p style="color:red">{errorMessage}</p>
-    {/if}
-
-    {#if user}
-        <h2>User Found:</h2>
-        <ul>
-            <li>ID: {user.id}</li>
-            <li>Username: {user.username}</li>
-            <li>Role: {user.role}</li>
-            <li>Created At: {user.created_at}</li>
-        </ul>
-    {/if}
-</main>
-
-
