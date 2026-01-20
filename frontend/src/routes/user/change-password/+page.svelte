@@ -25,6 +25,12 @@
 
             successMessage = data.message;
             newPassword = "";
+
+        setTimeout(() => {
+            window.location.href = "/dashboard";
+        }, 3000); 
+
+
         } catch {
             errorMessage = "Server error";
         }
