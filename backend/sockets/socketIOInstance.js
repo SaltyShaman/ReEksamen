@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 
 let io;
-let debug = false
+let debug = false //false means there is no console logging visable
 
 //login or session required for this socket to work. Use local sockets or a work around for create user
 

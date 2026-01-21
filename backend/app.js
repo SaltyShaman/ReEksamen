@@ -9,6 +9,8 @@ import sessionConfig from "./config/sessionConfig.js";
 import { generalLimiter, authLimiter } from "./config/rateLimiters.js";
 import userRouter from "./routes/userRouter.js";
 import authRouter from "./routes/authRouter.js"
+import hallRouter from "./routes/hallRouter.js";
+
 import { initSocket } from "./sockets/socketIOInstance.js";
 
 const app = express();
@@ -31,6 +33,7 @@ app.use(helmet());
 //ROUTES should have the suffix for what they do to maintain clarity
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
+app.use("/halls", hallRouter);
 
 // SOCKETS
 const io = initSocket(server);

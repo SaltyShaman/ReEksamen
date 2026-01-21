@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS reservations (
 );
 `);
 
-// SEEDING: Users only
+// SEEDING
 if (deleteMode) {
     const now = new Date().toISOString();
 
@@ -94,6 +94,31 @@ if (deleteMode) {
     const hashedUserOne = await bcrypt.hash('user1', 10);
     const hashedUserTwo = await bcrypt.hash('user2', 10);
     const hashedUserThree = await bcrypt.hash('user3', 10);
+
+    const halls = [
+    { name: "Big Hall", totalSeats: 200 },
+    { name: "Small Hall", totalSeats: 75 }
+    ];
+
+for (const hall of halls) {
+
+    const result = await db.run(
+        `INSERT INTO halls (name, total_seats)
+         VALUES (?, ?)`,
+        [hall.name, hall.totalSeats]
+    );
+
+    const hallId = result.lastID;
+
+    for (let seatNumber = 1; seatNumber <= hall.totalSeats; seatNumber++) {
+        await db.run(
+            `INSERT INTO seats (hall_id, seat_number)
+             VALUES (?, ?)`,
+            [hallId, seatNumber]
+        );
+    }
+}
+
 
     await db.run(
         `INSERT INTO users (username, password_hash, role, created_at)
