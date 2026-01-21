@@ -9,7 +9,9 @@
     let authChecked = false;
     let errorMessage = "";
     let successMessage = "";
-    let hallName = "";
+
+    let currentHallName = ""; // Immutable
+    let newHallName = "";     // Editable
 
     const hallId = $page.params.id;
 
@@ -30,7 +32,8 @@
                     return;
                 }
 
-                hallName = data.hall.name;
+                currentHallName = data.hall.name;
+                newHallName = data.hall.name; // pre-fill editable field
             } catch (err) {
                 console.error(err);
                 errorMessage = "Server error while loading hall";
@@ -39,8 +42,8 @@
     });
 
     async function updateHall() {
-        if (!hallName.trim()) {
-            errorMessage = "Hall name cannot be empty";
+        if (!newHallName.trim()) {
+            errorMessage = "New hall name cannot be empty";
             return;
         }
 
@@ -49,7 +52,7 @@
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify({ name: hallName })
+                body: JSON.stringify({ name: newHallName })
             });
 
             const data = await res.json();
@@ -61,10 +64,10 @@
 
             successMessage = data.message;
 
-            // Optionally update halls store immediately
-            halls.update(list => list.map(h => h.id == hallId ? { ...h, name: hallName } : h));
+            // Update store immediately
+            halls.update(list => list.map(h => h.id == hallId ? { ...h, name: newHallName } : h));
 
-            // Redirect back to halls list after 3 seconds
+            // Redirect back after 3s
             setTimeout(() => goto("/halls/all"), 3000);
 
         } catch (err) {
@@ -92,21 +95,21 @@
             <p style="color:green">{successMessage}</p>
         {/if}
 
+        <form on:submit|preventDefault={updateHall}>
+            <!-- Immutable Current Name -->
             <label>
-                Hall Name:
-                <input type="text" bind:value={hallName} required />
+                Current Hall Name:
+                <input type="text" bind:value={currentHallName} readonly />
             </label>
 
-
-        <form on:submit|preventDefault={updateHall}>
+            <!-- Editable New Name -->
             <label>
                 New Hall Name:
-                <input type="text" bind:value={hallName} required />
+                <input type="text" bind:value={newHallName} placeholder="Enter new hall name" required />
             </label>
 
             <button type="submit">Update</button>
+            <button type="button" on:click={() => goto("/halls/all")}>Cancel</button>
         </form>
-
-        <button on:click={() => goto("/halls/all")}>Cancel</button>
     {/if}
 </main>
