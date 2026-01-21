@@ -1,16 +1,15 @@
 <script>
     import { onMount } from "svelte";
-    import {halls, initHallSocket } from "$lib/stores/halls.js";
+    import { halls, initHallSocket } from "$lib/stores/halls.js";
     import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
+    import { goto } from "$app/navigation";
 
     let errorMessage = "";
     let currentUser = null;
-    let authChecked = false; // tracks if auth has been checked
+    let authChecked = false;
 
-    // Initialize Socket.IO connection to get live updates
     initHallSocket();
 
-    // Fetch initial list of users from backend
     onMount(async () => {
         await fetchMe();
         currentUser = $authUser;
@@ -34,11 +33,9 @@
         }
     });
 
-    // Delete a hall (admin only)
     async function deleteHall(hallId) {
         if (!confirm("Are you sure you want to delete this hall?")) return;
 
-        // Update UI immediately
         halls.update(list => list.filter(h => h.id !== hallId));
 
         try {
@@ -51,13 +48,13 @@
 
             if (!res.ok) {
                 alert(data.error || "Failed to delete hall");
-                // Optional: reload the list or revert UI update
             }
         } catch (err) {
             console.error(err);
             alert("Server error while deleting hall");
         }
     }
+
 </script>
 
 <main>
@@ -93,6 +90,11 @@
                         <td>{hall.created_at}</td>
                         <td>
                             <button on:click={() => deleteHall(hall.id)}>Delete</button>
+
+                            <button on:click={() => goto(`/halls/${hall.id}/update`)}>
+                                Update Hall name
+                            </button>
+
                         </td>
                     </tr>
                 {/each}
