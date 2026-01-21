@@ -36,6 +36,10 @@
                 <button on:click={() => window.location.href = "/admin/search"}>
                     Search Users
                 </button>
+                <button on:click={() => window.location.href = "/halls/all"}>
+                    See all halls
+                </button>
+
             </section>
         {/if}
 
