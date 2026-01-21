@@ -71,6 +71,12 @@
             <p style="color:red">{errorMessage}</p>
         {/if}
 
+        <button on:click={() => goto(`/halls/create`)}>
+            Create new hall
+        </button>
+
+
+
         <table>
             <thead>
                 <tr>
