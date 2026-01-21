@@ -89,6 +89,7 @@
                     <tr>
                         <td>{hall.id}</td>
                         <td>{hall.name}</td>
+                        <td>{hall.total_seats}</td>
                         <td>{hall.created_at}</td>
                         <td>
                             <button on:click={() => deleteHall(hall.id)}>Delete</button>
