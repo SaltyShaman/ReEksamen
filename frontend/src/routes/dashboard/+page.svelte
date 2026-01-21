@@ -40,6 +40,12 @@
                     See all halls
                 </button>
 
+                <button on:click={() => window.location.href = "/halls/search"}>
+                    Search halls
+                </button>
+
+
+
             </section>
         {/if}
 
