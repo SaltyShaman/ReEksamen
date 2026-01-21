@@ -1,82 +1,66 @@
 import { Router } from "express";
-import db from "../database/connection.js"; 
+import db from "../database/connection.js";
 import { requireLogin } from "../middleware/requireLogin.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
+import {
+    emitHallCreated,
+    emitHallUpdated,
+    emitHallDeleted
+} from "../sockets/events/hallEvents.js";
 
 const router = Router();
 
-
-//see all halls (admin)
+/**
+ * GET all halls (admin)
+ */
 router.get("/", requireLogin, requireAdmin, async (req, res) => {
-
     try {
-        const users = await db.all("SELECT id, name, total_seats, created_at FROM halls");
-        res.json({users});
+        const halls = await db.all(
+            "SELECT id, name, total_seats, created_at FROM halls"
+        );
+        res.json({ halls });
     } catch (err) {
         console.error(err);
-        res.status(500).json({error : "Failed to fetch halls"});
+        res.status(500).json({ error: "Failed to fetch halls" });
     }
 });
 
-//get by id (admin)
+/**
+ * GET hall by id (admin)
+ */
 router.get("/:id", requireLogin, requireAdmin, async (req, res) => {
-    
     try {
-        const user = await db.get(
-            "SELECT id, name, role, created_at FROM halls WHERE id =?", //comma to allow for id as a parameter
+        const hall = await db.get(
+            "SELECT id, name, total_seats, created_at FROM halls WHERE id = ?",
             [req.params.id]
         );
-        if (!user) return res.status(404).json({ error: "Hall not found" });
-        res.json({ user });
-    }  catch(err) {
+
+        if (!hall) {
+            return res.status(404).json({ error: "Hall not found" });
+        }
+
+        res.json({ hall });
+    } catch (err) {
         console.error(err);
-        res.status(500).json({error : "Hall not found"});
+        res.status(500).json({ error: "Failed to fetch hall" });
     }
 });
 
-//delete hall (admin)
-router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
-    
-    try {
-        const hallId = req.params.id;
-
-        const hall = await db.get(
-            "SELECT * FROM hall WHERE id = ?", [hallId]);
-
-            if (!hall) {
-                    return res.status(404).json({ error: "Hall not found"});
-            }
-
-            await db.run("DELETE FROM halls WHERE id = ?", [hallId]);
-
-
-            res.json({ message: `Hall with id ${hallId} successfully deleted` });
-
-
-            //socket implementation - to-do
-
-    } catch (err){
-        console.error(err);
-        res.status(500).json({ error: "Failed to delete hall" });
-    }
-});
-
-
-// create hall (admin only)
+/**
+ * CREATE hall (admin)
+ */
 router.post("/create", requireLogin, requireAdmin, async (req, res) => {
     try {
         const { name, totalSeats } = req.body;
 
-        if (!name || !totalSeats) {
-            return res.status(400).json({ error: "Name and total seats are required" });
-        }
-
-        if (totalSeats <= 0) {
-            return res.status(400).json({ error: "Total seats must be greater than 0" });
+        if (!name || !totalSeats || totalSeats <= 0) {
+            return res.status(400).json({
+                error: "Valid name and totalSeats are required"
+            });
         }
 
         const existing = await db.get(
-            "SELECT * FROM halls WHERE name = ?",
+            "SELECT id FROM halls WHERE name = ?",
             [name]
         );
 
@@ -84,45 +68,33 @@ router.post("/create", requireLogin, requireAdmin, async (req, res) => {
             return res.status(400).json({ error: "Hall name already exists" });
         }
 
-        const existingSeats = await db.get(
-             "SELECT 1 FROM seats WHERE hall_id = ? LIMIT 1",
-              [hallId]
-        );
-
-        if (!existingSeats) {
-            for (let seatNumber = 1; seatNumber <= totalSeats; seatNumber++) {
-                await db.run(
-                    `INSERT INTO seats (hall_id, seat_number)
-                    VALUES (?, ?)`,
-                [hallId, seatNumber]
-                );
-            }
-        }
-
+        // Create hall
         const result = await db.run(
-            `INSERT INTO halls (name, total_seats)
-             VALUES (?, ?)`,
+            "INSERT INTO halls (name, total_seats) VALUES (?, ?)",
             [name, totalSeats]
         );
 
         const hallId = result.lastID;
 
-        //Seats should be generated here in the backend
+        // Generate seats (ONCE)
         for (let seatNumber = 1; seatNumber <= totalSeats; seatNumber++) {
             await db.run(
-                `INSERT INTO seats (hall_id, seat_number)
-                 VALUES (?, ?)`,
+                "INSERT INTO seats (hall_id, seat_number) VALUES (?, ?)",
                 [hallId, seatNumber]
             );
         }
 
+        const hall = {
+            id: hallId,
+            name,
+            total_seats: totalSeats
+        };
+
+        emitHallCreated(hall);
+
         res.status(201).json({
             message: "Hall created successfully",
-            hall: {
-                id: hallId,
-                name,
-                total_seats: totalSeats
-            }
+            hall
         });
 
     } catch (err) {
@@ -131,8 +103,10 @@ router.post("/create", requireLogin, requireAdmin, async (req, res) => {
     }
 });
 
-//update name for hall. Total seats should not be changable.
-// if a seat is unavaible (say broken) it should be marked as unavaible until fixed without affecting the amount of seats
+/**
+ * UPDATE hall name (admin)
+ * total_seats intentionally NOT editable
+ */
 router.put("/:id", requireLogin, requireAdmin, async (req, res) => {
     const { name } = req.body;
     const hallId = req.params.id;
@@ -141,23 +115,60 @@ router.put("/:id", requireLogin, requireAdmin, async (req, res) => {
         return res.status(400).json({ error: "Name is required" });
     }
 
-    const hall = await db.get(
-        "SELECT * FROM halls WHERE id = ?",
-        [hallId]
-    );
+    try {
+        const hall = await db.get(
+            "SELECT * FROM halls WHERE id = ?",
+            [hallId]
+        );
 
-    if (!hall) {
-        return res.status(404).json({ error: "Hall not found" });
+        if (!hall) {
+            return res.status(404).json({ error: "Hall not found" });
+        }
+
+        await db.run(
+            "UPDATE halls SET name = ? WHERE id = ?",
+            [name, hallId]
+        );
+
+        const updatedHall = {
+            ...hall,
+            name
+        };
+
+        emitHallUpdated(updatedHall);
+
+        res.json({ message: "Hall updated successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to update hall" });
     }
-
-    await db.run(
-        "UPDATE halls SET name = ? WHERE id = ?",
-        [name, hallId]
-    );
-
-    res.json({ message: "Hall updated successfully" });
 });
 
+/**
+ * DELETE hall (admin)
+ */
+router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
+    try {
+        const hallId = req.params.id;
 
+        const hall = await db.get(
+            "SELECT id FROM halls WHERE id = ?",
+            [hallId]
+        );
+
+        if (!hall) {
+            return res.status(404).json({ error: "Hall not found" });
+        }
+
+        await db.run("DELETE FROM halls WHERE id = ?", [hallId]);
+
+        emitHallDeleted(hallId);
+
+        res.json({ message: "Hall deleted successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to delete hall" });
+    }
+});
 
 export default router;
