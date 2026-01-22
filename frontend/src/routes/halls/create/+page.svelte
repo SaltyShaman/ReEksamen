@@ -50,7 +50,7 @@
             successMessage = "Hall created successfully!";
             
             // Redirect to hall list after 2s
-            setTimeout(() => goto("/halls/all"), 2000);
+            setTimeout(() => goto("/halls"), 2000);
 
         } catch (err) {
             console.error(err);

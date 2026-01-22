@@ -13,7 +13,8 @@
     let currentHallName = ""; // Immutable
     let newHallName = "";     // Editable
 
-    const hallId = $page.params.id;
+    // ✅ Use hallId to match folder name
+    const hallId = $page.params.hallId;
 
     initHallSocket();
 
@@ -68,7 +69,7 @@
             halls.update(list => list.map(h => h.id == hallId ? { ...h, name: newHallName } : h));
 
             // Redirect back after 3s
-            setTimeout(() => goto("/halls/all"), 3000);
+            setTimeout(() => goto("/halls"), 3000);
 
         } catch (err) {
             console.error(err);
@@ -76,6 +77,7 @@
         }
     }
 </script>
+
 
 <main>
     {#if !authChecked}
@@ -109,7 +111,7 @@
             </label>
 
             <button type="submit">Update</button>
-            <button type="button" on:click={() => goto("/halls/all")}>Cancel</button>
+            <button type="button" on:click={() => goto("/halls")}>Cancel</button>
         </form>
     {/if}
 </main>

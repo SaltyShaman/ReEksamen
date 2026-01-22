@@ -3,13 +3,15 @@
   import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
-  
+  import { seats, loadSeatsForHall, initSeatSocket } from "$lib/stores/seats.js";
+
   let currentUser = null;
   let authChecked = false;
   let errorMessage = "";
-  let seats = [];
+  let hallId;
 
-  const hallId = $page.params.id;
+  // ✅ match new folder param
+  $: hallId = Number($page.params.hallId);
 
   onMount(async () => {
     await fetchMe();
@@ -17,25 +19,17 @@
     authChecked = true;
 
     try {
-      const res = await fetch(`http://localhost:8080/seats/halls/${hallId}/seats`, {
-        credentials: "include"
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        errorMessage = data.error || "Failed to load seats";
-        return;
-      }
-
-      seats = data.seats;
+      initSeatSocket(); // connect to seat socket
+      await loadSeatsForHall(hallId); // fetch seats for this hall
     } catch (err) {
       console.error(err);
-      errorMessage = "Server error while loading seats";
+      errorMessage = err.message || "Server error while loading seats";
     }
   });
 
   function updateSeat(seat) {
-    goto(`/halls/${hallId}/seats/${seat.seat_number}/update-seats`);  }
+    goto(`/halls/${hallId}/seats/${seat.seat_number}/update-seats`);
+  }
 </script>
 
 <main>
@@ -57,7 +51,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each seats as seat}
+        {#each $seats[hallId] ?? [] as seat}
         <tr>
           <td>{seat.seat_number}</td>
           <td>{seat.status}</td>
@@ -68,7 +62,6 @@
           {/if}
         </tr>
         {/each}
-
       </tbody>
     </table>
   {/if}
