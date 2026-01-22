@@ -5,7 +5,20 @@
 TO-DO: 
 
 
-        movie entity
+        movie entity (CRUD):
+                admin: Create, Update + Delete
+                Read all: public aviable
+                Read by name: public
+
+                FUTURE: movies by showtime
+
+                nice to have: search by description
+
+
+
+        halls: you cannot delete halls with active showtimes
+
+
 
         reservation
 
