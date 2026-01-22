@@ -11,6 +11,8 @@ import userRouter from "./routes/userRouter.js";
 import authRouter from "./routes/authRouter.js"
 import hallRouter from "./routes/hallRouter.js";
 import seatRouter from "./routes/seatRouter.js";
+import movieRouter from "./routes/movieRouter.js";
+
 
 
 import { initSocket } from "./sockets/socketIOInstance.js";
@@ -37,7 +39,7 @@ app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/halls", hallRouter);
 app.use("/seats", seatRouter);
-
+app.use("/movies", movieRouter);
 // SOCKETS
 const io = initSocket(server);
 
