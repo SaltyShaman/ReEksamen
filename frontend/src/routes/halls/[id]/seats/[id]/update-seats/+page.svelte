@@ -2,59 +2,63 @@
   import { onMount } from "svelte";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
-  import { seats, loadSeatsForHall, initSeatSocket } from "$lib/stores/seats.js";
+  import { initSeatSocket, loadSeat } from "$lib/stores/seats.js";
 
   let hallId;
-  let seatId;
-  let seat;
+  let seatNumber;
+  let seat = null;
   let currentStatus = "";
   let newStatus = "";
   let errorMessage = "";
   let successMessage = "";
 
-  // Reactive assignment from $page.params
-  $: hallId = $page.params.hallId;
-  $: seatId = $page.params.seatId;
+  // Subscribe to $page params safely
+  let unsubscribe;
+  onMount(() => {
+    unsubscribe = page.subscribe(($page) => {
+      const hId = Number($page.params.hallId);
+      const sNum = Number($page.params.seatNumber);
 
-  // Reactive: fetch seat whenever hallId & seatId are available
-  $: if (hallId && seatId) {
-    loadSeat();
-  }
+      // Only update if values are valid numbers
+      if (!isNaN(hId) && !isNaN(sNum)) {
+        hallId = hId;
+        seatNumber = sNum;
 
-  async function loadSeat() {
-    errorMessage = "";
-    try {
-      initSeatSocket(); // init socket if not already
-
-      await loadSeatsForHall(hallId);
-
-      // Get the specific seat from the store
-      const unsubscribe = seats.subscribe(allSeats => {
-        seat = allSeats[hallId]?.find(s => s.id == seatId);
-        if (seat) {
-          currentStatus = seat.status;
-          newStatus = seat.status;
-        }
-      });
-
-      // Cleanup subscription after one tick
-      setTimeout(() => unsubscribe(), 0);
-
-      if (!seat) {
-        errorMessage = "Seat not found";
+        loadSeatData(); // load seat data whenever params are ready
       }
+    });
+
+    return () => {
+      unsubscribe && unsubscribe();
+    };
+  });
+
+  async function loadSeatData() {
+    errorMessage = "";
+    seat = null;
+
+    try {
+      initSeatSocket();
+
+      seat = await loadSeat(hallId, seatNumber);
+
+      currentStatus = seat.status;
+      newStatus = seat.status;
     } catch (err) {
       console.error(err);
-      errorMessage = "Server error while loading seat";
+      errorMessage = err.message || "Failed to load seat";
     }
   }
 
   async function updateSeatStatus() {
     if (!seat) return;
 
+    errorMessage = "";
+    successMessage = "";
+
     try {
       const res = await fetch(
-        `http://localhost:8080/seats/halls/${hallId}/seats/${seatId}/status`,
+        `http://localhost:8080/seats/halls/${hallId}/seats/${seatNumber}/status`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -72,9 +76,7 @@
 
       successMessage = data.message;
 
-      // Redirect after update
       setTimeout(() => goto(`/halls/${hallId}/seats`), 2000);
-
     } catch (err) {
       console.error(err);
       errorMessage = "Server error while updating seat";
@@ -83,10 +85,15 @@
 </script>
 
 <main>
-  <h1>Update Seat #{seatId} Status</h1>
+  <h1>Update Seat #{seatNumber} Status</h1>
 
-  {#if errorMessage}<p style="color:red">{errorMessage}</p>{/if}
-  {#if successMessage}<p style="color:green">{successMessage}</p>{/if}
+  {#if errorMessage}
+    <p style="color:red">{errorMessage}</p>
+  {/if}
+
+  {#if successMessage}
+    <p style="color:green">{successMessage}</p>
+  {/if}
 
   {#if seat}
     <p>Current Status: <b>{currentStatus}</b></p>
@@ -100,8 +107,10 @@
       </select>
     </label>
 
-    <button on:click={updateSeatStatus}>Update</button>
-    <button on:click={() => goto(`/halls/${hallId}/seats`)}>Cancel</button>
+    <div>
+      <button on:click={updateSeatStatus}>Update</button>
+      <button on:click={() => goto(`/halls/${hallId}/seats`)}>Cancel</button>
+    </div>
   {:else if !errorMessage}
     <p>Loading seat information...</p>
   {/if}

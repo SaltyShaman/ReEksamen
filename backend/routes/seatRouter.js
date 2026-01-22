@@ -26,12 +26,12 @@ router.get("/halls/:hallId/seats", requireLogin, requireAdmin, async (req, res) 
 /**
  * GET specific seat in hall (admin)
  */
-router.get("/halls/:hallId/seats/:seatId", requireLogin, requireAdmin, async (req, res) => {
-    const { hallId, seatId } = req.params;
+router.get("/halls/:hallId/seats/:seatNumber", requireLogin, requireAdmin, async (req, res) => {
+    const { hallId, seatNumber } = req.params;
 
     const seat = await db.get(
-        "SELECT id, seat_number, status FROM seats WHERE id = ? AND hall_id = ?",
-        [seatId, hallId]
+        "SELECT id, hall_id, seat_number, status FROM seats WHERE hall_id = ? AND seat_number = ?",
+        [hallId, seatNumber]
     );
 
     if (!seat) {
@@ -42,39 +42,39 @@ router.get("/halls/:hallId/seats/:seatId", requireLogin, requireAdmin, async (re
 });
 
 
-
 /**
  * UPDATE seat status (admin)
  */
-router.patch("/halls/:hallId/seats/:seatId/status", requireLogin, requireAdmin, async (req, res) => {
-    const { hallId, seatId } = req.params;
+router.patch("/halls/:hallId/seats/:seatNumber/status", requireLogin, requireAdmin, async (req, res) => {
+    const { hallId, seatNumber } = req.params;
     const { status } = req.body;
 
     const allowedStatuses = ["AVAILABLE", "BROKEN", "MAINTENANCE"];
-
     if (!allowedStatuses.includes(status)) {
         return res.status(400).json({ error: "Invalid seat status" });
     }
 
+    // Update by hall_id + seat_number
     const result = await db.run(
-        "UPDATE seats SET status = ? WHERE id = ? AND hall_id = ?",
-        [status, seatId, hallId]
+        "UPDATE seats SET status = ? WHERE hall_id = ? AND seat_number = ?",
+        [status, hallId, seatNumber]
     );
 
     if (result.changes === 0) {
         return res.status(404).json({ error: "Seat not found" });
     }
 
+    // Get updated seat for socket broadcast
     const updatedSeat = await db.get(
-      "SELECT id, hall_id, seat_number, status FROM seats WHERE id = ?",
-      [seatId]
+        "SELECT id, hall_id, seat_number, status FROM seats WHERE hall_id = ? AND seat_number = ?",
+        [hallId, seatNumber]
     );
 
     emitSeatUpdated(updatedSeat);
 
     res.json({
         message: "Seat status updated",
-        seat: { id: seatId, status }
+        seat: { seat_number: updatedSeat.seat_number, status: updatedSeat.status }
     });
 });
 

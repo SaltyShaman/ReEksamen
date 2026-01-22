@@ -34,9 +34,8 @@
     }
   });
 
-  function updateSeat(seatId) {
-    goto(`/halls/${hallId}/seats/${seatId}/update-seats`);
-  }
+  function updateSeat(seat) {
+    goto(`/halls/${hallId}/seats/${seat.seat_number}/update-seats`);  }
 </script>
 
 <main>
@@ -59,14 +58,17 @@
       </thead>
       <tbody>
         {#each seats as seat}
-          <tr>
-            <td>{seat.seat_number}</td>
-            <td>{seat.status}</td>
-            {#if currentUser.role === "ADMIN"}
-              <td><button on:click={() => updateSeat(seat.id)}>Change Status</button></td>
-            {/if}
-          </tr>
+        <tr>
+          <td>{seat.seat_number}</td>
+          <td>{seat.status}</td>
+          {#if currentUser.role === "ADMIN"}
+            <td>
+              <button on:click={() => updateSeat(seat)}>Change Status</button>
+            </td>
+          {/if}
+        </tr>
         {/each}
+
       </tbody>
     </table>
   {/if}

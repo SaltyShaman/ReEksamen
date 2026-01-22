@@ -50,22 +50,28 @@ export function initSeatSocket() {
 export async function loadSeatsForHall(hallId) {
     const res = await fetch(
         `http://localhost:8080/seats/halls/${hallId}/seats`,
-        {
-            credentials: "include"
-        }
+        { credentials: "include" }
     );
-
     const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to load seats");
 
-    if (!res.ok) {
-        throw new Error(data.error || "Failed to load seats");
-    }
-
-    seats.update(all => ({
-        ...all,
-        [hallId]: data.seats
-    }));
+    seats.update(all => ({ ...all, [hallId]: data.seats }));
+    return data.seats;
 }
+
+export async function loadSeat(hallId, seatNumber) {
+  const res = await fetch(
+    `http://localhost:8080/seats/halls/${hallId}/seats/${seatNumber}`,
+    { credentials: "include" }
+  );
+
+  const data = await res.json();
+
+  if (!res.ok) throw new Error(data.error || "Failed to load seat");
+
+  return data.seat; // now returns {id, hall_id, seat_number, status}
+}
+
 
 /**
  * Clear seats for a hall (optional cleanup)
