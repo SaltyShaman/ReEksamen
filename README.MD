@@ -3,9 +3,7 @@
 ## Projekt: Biograf med en række film, lokaler og sæder
 
 TO-DO: 
-        halls socket console log fix
 
-        seat entity
 
         movie entity
 
