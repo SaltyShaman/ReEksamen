@@ -51,6 +51,12 @@
         <a href="/user/delete">Delete account?</a>
     </div>
 
+    <div>
+        <a href="/movies">Browse movies</a>
+    </div>
+
+
+
 
     <div>
         {#if user}
