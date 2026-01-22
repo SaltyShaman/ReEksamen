@@ -101,6 +101,10 @@
                                 Update Hall name
                             </button>
 
+                            <button on:click={() => goto(`/halls/${hall.id}/seats`)}>
+                                See hall seats
+                            </button>
+
                         </td>
                     </tr>
                 {/each}

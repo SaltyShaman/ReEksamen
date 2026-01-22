@@ -79,15 +79,4 @@ router.patch("/halls/:hallId/seats/:seatId/status", requireLogin, requireAdmin, 
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
 export default router;
