@@ -120,6 +120,27 @@ for (const hall of halls) {
     }
 }
 
+// SEED MOVIES
+const moviesSeed = [
+    { title: "The Shawshank Redemption", description: "Two imprisoned men bond over years, finding hope.", duration: 142, release_date: "1994-09-23" },
+    { title: "The Godfather", description: "The aging patriarch of an organized crime dynasty transfers control to his son.", duration: 175, release_date: "1972-03-24" },
+    { title: "The Dark Knight", description: "Batman faces the Joker in Gotham City.", duration: 152, release_date: "2008-07-18" },
+    { title: "Pulp Fiction", description: "The lives of two mob hitmen intertwine in a series of stories.", duration: 154, release_date: "1994-10-14" },
+    { title: "Forrest Gump", description: "The life journey of a slow-witted but kind-hearted man.", duration: 142, release_date: "1994-07-06" },
+    { title: "Inception", description: "A thief steals corporate secrets through dream-sharing technology.", duration: 148, release_date: "2010-07-16" },
+    { title: "Fight Club", description: "An insomniac and a soap maker form an underground fight club.", duration: 139, release_date: "1999-10-15" },
+    { title: "The Matrix", description: "A hacker discovers reality is a simulation.", duration: 136, release_date: "1999-03-31" },
+    { title: "Interstellar", description: "A team travels through a wormhole in search of a new home for humanity.", duration: 169, release_date: "2014-11-07" },
+    { title: "The Lord of the Rings: The Fellowship of the Ring", description: "A hobbit sets out on a quest to destroy a powerful ring.", duration: 178, release_date: "2001-12-19" }
+];
+
+    for (const movie of moviesSeed) {
+        await db.run(
+            `INSERT INTO movies (title, description, duration_minutes, release_date)
+            VALUES (?, ?, ?, ?)`,
+            [movie.title, movie.description, movie.duration, movie.release_date]
+        );
+    }
 
     await db.run(
         `INSERT INTO users (username, password_hash, role, created_at)
