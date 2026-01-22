@@ -3,6 +3,7 @@
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import { initSeatSocket, loadSeat } from "$lib/stores/seats.js";
+  import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
 
   let hallId;
   let seatNumber;
@@ -12,36 +13,41 @@
   let errorMessage = "";
   let successMessage = "";
 
-  // Subscribe to $page params safely
-  let unsubscribe;
-  onMount(() => {
-    unsubscribe = page.subscribe(($page) => {
-      const hId = Number($page.params.hallId);
-      const sNum = Number($page.params.seatNumber);
+  let currentUser = null;
+  let authChecked = false;
 
-      // Only update if values are valid numbers
-      if (!isNaN(hId) && !isNaN(sNum)) {
-        hallId = hId;
-        seatNumber = sNum;
+  // ✅ Subscribe to $page params reactively
+  $: hallId = Number($page.params.hallId);
+  $: seatNumber = Number($page.params.seatNumber);
 
-        loadSeatData(); // load seat data whenever params are ready
-      }
-    });
+  onMount(async () => {
+    // 1️⃣ Fetch current user info
+    await fetchMe();
+    currentUser = $authUser;
+    authChecked = true;
 
-    return () => {
-      unsubscribe && unsubscribe();
-    };
+    // 2️⃣ Redirect if not logged in
+    if (!$isLoggedIn) return;
+
+    // 3️⃣ Redirect if not admin
+    if (currentUser.role !== "ADMIN") return;
+
+    // 4️⃣ Load seat data
+    await loadSeatData();
   });
 
   async function loadSeatData() {
     errorMessage = "";
     seat = null;
 
+    if (isNaN(hallId) || isNaN(seatNumber)) {
+      errorMessage = "Invalid hall or seat number.";
+      return;
+    }
+
     try {
       initSeatSocket();
-
       seat = await loadSeat(hallId, seatNumber);
-
       currentStatus = seat.status;
       newStatus = seat.status;
     } catch (err) {
@@ -76,6 +82,7 @@
 
       successMessage = data.message;
 
+      // Redirect back to seat list after 2 seconds
       setTimeout(() => goto(`/halls/${hallId}/seats`), 2000);
     } catch (err) {
       console.error(err);
@@ -85,33 +92,36 @@
 </script>
 
 <main>
-  <h1>Update Seat #{seatNumber} Status</h1>
+  {#if !authChecked}
+    <p>Checking authentication...</p>
+  {:else if !$isLoggedIn}
+    <p>You must log in to view this page.</p>
+  {:else if currentUser.role !== "ADMIN"}
+    <p>You are not authorized to view this page.</p>
+  {:else}
+    <h1>Update Seat #{seatNumber} Status</h1>
 
-  {#if errorMessage}
-    <p style="color:red">{errorMessage}</p>
-  {/if}
+    {#if errorMessage}<p style="color:red">{errorMessage}</p>{/if}
+    {#if successMessage}<p style="color:green">{successMessage}</p>{/if}
 
-  {#if successMessage}
-    <p style="color:green">{successMessage}</p>
-  {/if}
+    {#if seat}
+      <p>Current Status: <b>{currentStatus}</b></p>
 
-  {#if seat}
-    <p>Current Status: <b>{currentStatus}</b></p>
+      <label>
+        New Status:
+        <select bind:value={newStatus}>
+          <option value="AVAILABLE">AVAILABLE</option>
+          <option value="BROKEN">BROKEN</option>
+          <option value="MAINTENANCE">MAINTENANCE</option>
+        </select>
+      </label>
 
-    <label>
-      New Status:
-      <select bind:value={newStatus}>
-        <option value="AVAILABLE">AVAILABLE</option>
-        <option value="BROKEN">BROKEN</option>
-        <option value="MAINTENANCE">MAINTENANCE</option>
-      </select>
-    </label>
-
-    <div>
-      <button on:click={updateSeatStatus}>Update</button>
-      <button on:click={() => goto(`/halls/${hallId}/seats`)}>Cancel</button>
-    </div>
-  {:else if !errorMessage}
-    <p>Loading seat information...</p>
+      <div>
+        <button on:click={updateSeatStatus}>Update</button>
+        <button on:click={() => goto(`/halls/${hallId}/seats`)}>Cancel</button>
+      </div>
+    {:else if !errorMessage}
+      <p>Loading seat information...</p>
+    {/if}
   {/if}
 </main>
