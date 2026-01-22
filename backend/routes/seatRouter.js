@@ -10,7 +10,7 @@ const router = Router();
 
 
 //see all seats by hall
-router.get("/halls/:hallId/seats", requireLogin, async (req, res) => {
+router.get("/halls/:hallId/seats", requireLogin, requireAdmin, async (req, res) => {
     const { hallId } = req.params;
 
     const seats = await db.all(
