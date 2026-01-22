@@ -3,6 +3,8 @@ import { Server } from "socket.io";
 let io;
 let debug = false //false means there is no console logging visable
 
+const log = () => {}; //change to console.log to reenable logging
+
 //login or session required for this socket to work. Use local sockets or a work around for create user
 
 /**
@@ -19,11 +21,11 @@ export function initSocket(server) {
     });
 
     io.on("connection", (socket) => {
-        console.log("Socket connected:", socket.id);
+        log("Socket connected:", socket.id);
 
-        socket.on("disconnect", () => {
-            console.log("Socket disconnected:", socket.id);
-        });
+    socket.on("disconnect", () => {
+        log("Socket disconnected:", socket.id);
+    });
     });
 
     return io;

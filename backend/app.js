@@ -10,6 +10,8 @@ import { generalLimiter, authLimiter } from "./config/rateLimiters.js";
 import userRouter from "./routes/userRouter.js";
 import authRouter from "./routes/authRouter.js"
 import hallRouter from "./routes/hallRouter.js";
+import seatRouter from "./routes/seatRouter.js";
+
 
 import { initSocket } from "./sockets/socketIOInstance.js";
 
@@ -34,6 +36,7 @@ app.use(helmet());
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/halls", hallRouter);
+app.use("/seats", seatRouter);
 
 // SOCKETS
 const io = initSocket(server);
