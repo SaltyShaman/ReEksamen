@@ -3,27 +3,45 @@
 ## Projekt: Biograf med en række film, lokaler og sæder
 
 TO-DO: 
-        
+        halls socket console log fix
+
+        seat entity
 
         movie entity
 
+        reservation
+
+        showtimes
 
         authentication for frontend roles for USER entity (as project is being built)
 
-        user dashboard with reservations by movie. full details with movie reservations
+        user dashboard with reservations. full details with movie reservations
 
 
 
         admin dashboard with more options:
-                movie dashboard. CRUD <---a movie attached to hall>
-                hall dashboard. CRUD <---seat attached to each hall>
-                seat dashboard and overview
+                movie dashboard. CRUD <---a movie attached to showtime>
 
+                hall delete update:
+                        --> you cannot delete a hall if there is a showtime booked
+
+                seat dashboard and overview. CRUD
+                        -> see if admin can mark a seat as unavaible
+
+                reservations CRUD
+                        --> optionial: staticstics over reservations by movie
+
+                
+                showtime CRUD
 
 
         
 
-        dashboard for admin and user (diffrentiated views) admin done for user entity
+        dashboard for admin and user (diffrentiated views)
+                user
+                halls (update delete to include logic about showtimes)
+                seats: mark seats as unavaible per hall
+                movies page
 
 
 basic ER diagrams:
@@ -41,8 +59,11 @@ admin -> movie
 
 seats -> hall
 
-movie -> hall
+movie -> showtime
 
+reservation -> showtime
+
+seats -> reservations <- user
 
 KNOWN BUGS:
 admin list delte -> if you log in as admin and delete your own user you are not visable on the list until refresh

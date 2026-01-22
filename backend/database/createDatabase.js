@@ -39,6 +39,7 @@ await db.exec(`
 CREATE TABLE IF NOT EXISTS seats (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     hall_id INTEGER NOT NULL,
+    status TEXT NOT NULL DEFAULT 'AVAILABLE',
     seat_number INTEGER NOT NULL,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     UNIQUE(hall_id, seat_number),
