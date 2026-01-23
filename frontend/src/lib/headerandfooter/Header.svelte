@@ -55,8 +55,9 @@
         <a href="/movies">Browse movies</a>
     </div>
 
-
-
+    <div>
+        <a href="/showtimes">Browse showtimes</a>
+    </div>
 
     <div>
         {#if user}
