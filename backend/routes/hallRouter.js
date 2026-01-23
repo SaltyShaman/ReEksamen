@@ -125,6 +125,17 @@ router.put("/:id", requireLogin, requireAdmin, async (req, res) => {
             return res.status(404).json({ error: "Hall not found" });
         }
 
+        const futureShowtime = await db.get(
+            "SELECT id FROM showtimes WHERE hall_id = ? AND show_datetime > datetime('now') LIMIT 1",
+            [hallId]
+        );
+
+        if (futureShowtime) {
+            return res.status(400).json({ 
+                error: "Cannot delete hall: there are future scheduled showtimes" 
+            });
+        }
+
         await db.run(
             "UPDATE halls SET name = ? WHERE id = ?",
             [name, hallId]
@@ -158,6 +169,18 @@ router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
 
         if (!hall) {
             return res.status(404).json({ error: "Hall not found" });
+        }
+
+         // Check for future showtimes
+        const futureShowtime = await db.get(
+            "SELECT id FROM showtimes WHERE hall_id = ? AND show_datetime > datetime('now') LIMIT 1",
+            [hallId]
+        );
+
+        if (futureShowtime) {
+            return res.status(400).json({ 
+                error: "Cannot delete hall: there are future scheduled showtimes" 
+            });
         }
 
         await db.run("DELETE FROM halls WHERE id = ?", [hallId]);
