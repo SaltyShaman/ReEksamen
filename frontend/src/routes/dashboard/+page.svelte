@@ -44,6 +44,15 @@
                     Search halls
                 </button>
 
+                <button on:click={() => window.location.href = "/movies/create"}>
+                    Register new movie in the database
+                </button>
+
+                
+                <button on:click={() => window.location.href = "/movies/delete"}>
+                    Find and delete movie in the database
+                </button>
+                
 
 
             </section>
