@@ -50,9 +50,6 @@ export function createMovie(movieData) {
     socket?.emit("create-movie", movieData);
 }
 
-export function updateMovie(movieData) {
-    socket?.emit("update-movie", movieData);
-}
 
 export function deleteMovie(movieId) {
     socket?.emit("delete-movie", { id: movieId });
