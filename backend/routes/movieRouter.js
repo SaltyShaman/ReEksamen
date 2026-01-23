@@ -4,7 +4,6 @@ import { requireLogin } from "../middleware/requireLogin.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
 import {
     emitMovieCreated,
-    emitMovieUpdated,
     emitMovieDeleted
 } from "../sockets/events/movieEvents.js";
 import { title } from "process";
@@ -20,7 +19,6 @@ const router = Router();
         admin routes:
                 create movie
                 delete movie
-                update movie
 
 */
 
@@ -86,38 +84,6 @@ router.post("/", requireLogin, requireAdmin, async (req, res) => {
     }
 });
 
-// PUT /movies/:id → update an existing movie
-router.put("/:id", requireLogin, requireAdmin, async (req, res) => {
-    const movieId = req.params.id;
-    const { title, description, duration_minutes, release_date } = req.body;
-
-    try {
-        // seee if movie is existing
-        const movie = await db.get("SELECT * FROM movies WHERE id = ?", [movieId]);
-        if (!movie) return res.status(404).json({ error: "Movie not found" });
-
-        // Update fields (keep old values if not provided)
-        await db.run(
-            `UPDATE movies
-             SET title = ?, description = ?, duration_minutes = ?, release_date = ?
-             WHERE id = ?`,
-            [
-                title || movie.title,
-                description || movie.description,
-                duration_minutes || movie.duration_minutes,
-                release_date || movie.release_date,
-                movieId
-            ]
-        );
-
-        emitMovieUpdated(movieId);
-
-        res.json({ message: "Movie updated successfully" });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Failed to update movie" });
-    }
-});
 
 // DELETE /movies/:id → delete a movie
 router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
