@@ -45,3 +45,4 @@ export async function loadShowtimes(movieTitle = "") {
         showtimes.set([]);
     }
 }
+
