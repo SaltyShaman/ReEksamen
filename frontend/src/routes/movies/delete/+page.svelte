@@ -135,8 +135,8 @@
       </tbody>
     </table>
 
-    <button on:click={() => goto("/movies")}>
-      Back to Movies
+    <button on:click={() => goto("/dashboard")}>
+      Back to dashboard
     </button>
   {/if}
 </main>
