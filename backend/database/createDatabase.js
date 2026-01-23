@@ -142,6 +142,44 @@ const moviesSeed = [
         );
     }
 
+    // SEED SHOWTIMES (end of February)
+    const showtimesSeed = [
+    {
+        movie_id: 1, // The Shawshank Redemption
+        hall_id: 1,  // Big Hall
+        show_datetime: "2026-02-24T18:00"
+    },
+    {
+        movie_id: 3, // The Dark Knight
+        hall_id: 1,
+        show_datetime: "2026-02-25T20:30"
+    },
+    {
+        movie_id: 6, // Inception
+        hall_id: 2,  // Small Hall
+        show_datetime: "2026-02-26T19:00"
+    },
+    {
+        movie_id: 8, // The Matrix
+        hall_id: 1,
+        show_datetime: "2026-02-27T21:00"
+    },
+    {
+        movie_id: 9, // Interstellar
+        hall_id: 2,
+        show_datetime: "2026-02-28T17:30"
+    }
+    ];
+
+    for (const showtime of showtimesSeed) {
+        await db.run(
+            `INSERT INTO showtimes (movie_id, hall_id, show_datetime)
+            VALUES (?, ?, ?)`,
+            [showtime.movie_id, showtime.hall_id, showtime.show_datetime]
+        );
+    }
+
+
     await db.run(
         `INSERT INTO users (username, password_hash, role, created_at)
          VALUES (?, ?, ?, ?)`,
