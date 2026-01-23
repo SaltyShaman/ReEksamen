@@ -73,7 +73,7 @@
                     <td>{new Date(s.show_datetime).toLocaleString()}</td>
                     {#if authChecked && $isLoggedIn && currentUser?.role === "ADMIN"}
                         <td>
-                            <button on:click={() => goToDelete(s.showtime_id)}>Delete</button>
+                            <button on:click={() => goToDelete(s.id)}>Go to delete page</button>
                         </td>
                     {/if}
                 </tr>

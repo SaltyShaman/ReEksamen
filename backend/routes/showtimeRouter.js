@@ -186,6 +186,28 @@ router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
     }
 });
 
+// Get showtime by ID (for admin delete page)
+router.get("/:id", requireLogin, requireAdmin, async (req, res) => {
+    const { id } = req.params;
+
+    const showtime = await db.get(`
+        SELECT 
+            s.id,
+            s.show_datetime,
+            m.title AS movie_title,
+            h.name AS hall_name
+        FROM showtimes s
+        JOIN movies m ON s.movie_id = m.id
+        JOIN halls h ON s.hall_id = h.id
+        WHERE s.id = ?
+    `, [id]);
+
+    if (!showtime) {
+        return res.status(404).json({ error: "Showtime not found" });
+    }
+
+    res.json({ showtime });
+});
 
 
 export default router;
