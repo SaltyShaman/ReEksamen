@@ -30,13 +30,6 @@ export function initMovieSocket() {
         );
     });
 
-    // Movie updated
-    socket.on("movie-updated", (updatedMovie) => {
-        movies.update(list =>
-            list.map(m => m.id === updatedMovie.id ? updatedMovie : m)
-        );
-    });
-
     // Movie deleted
     socket.on("movie-deleted", ({ id }) => {
         movies.update(list => list.filter(m => m.id !== id));
