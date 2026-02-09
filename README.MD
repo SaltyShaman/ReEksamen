@@ -4,46 +4,34 @@
 
 TO-DO: 
 
+        reservation - FULL CRUD and LOGIN
+                * create
+                --> make so you can book multiple reservations as a group with same user
+
+                * cancel reservation
+                * see own reservations
+                * update reservation (self)
+                * update reservation (admin)
+                * admin delete
+
+
+        FUTURE:
+                see active reservations at dashboard with navigation to CRUD pages
+
+        NICE TO HAVE: see past reservations
+
 
         movie entity (CRUD):
-                admin: Create, Update + Delete
-                Read all: public aviable
-                Read by name: public
 
                 FUTURE: movies by showtime
 
                 nice to have: search by description
 
-
-
         halls: you cannot delete halls with active showtimes
 
 
 
-        reservation
-
-        showtimes
-
-        authentication for frontend roles for USER entity (as project is being built)
-
-        user dashboard with reservations. full details with movie reservations
-
-
-
         admin dashboard with more options:
-                movie dashboard. CRUD <---a movie attached to showtime>
-
-                hall delete update:
-                        --> you cannot delete a hall if there is a showtime booked
-
-                seat dashboard and overview. CRUD
-                        -> see if admin can mark a seat as unavaible
-
-                reservations CRUD
-                        --> optionial: staticstics over reservations by movie
-
-                
-                showtime CRUD
 
 
         
