@@ -6,6 +6,7 @@ const deleteMode = process.argv.includes('delete');
 if (deleteMode) {
     // Drop tables in reverse order of dependencies
     await db.exec(`DROP TABLE IF EXISTS reservations;`);
+    await db.exec(`DROP TABLE IF EXISTS reservation_groups;`);
     await db.exec(`DROP TABLE IF EXISTS showtimes;`);
     await db.exec(`DROP TABLE IF EXISTS movies;`);
     await db.exec(`DROP TABLE IF EXISTS seats;`);
@@ -72,20 +73,32 @@ CREATE TABLE IF NOT EXISTS showtimes (
 );
 `);
 
+await db.exec(`
+CREATE TABLE IF NOT EXISTS reservation_groups (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    showtime_id INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (showtime_id) REFERENCES showtimes(id) ON DELETE CASCADE
+);
+`);
+
+
 // CREATE TABLE reservations
 await db.exec(`
 CREATE TABLE IF NOT EXISTS reservations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    showtime_id INTEGER NOT NULL,
+    reservation_group_id INTEGER NOT NULL,
     seat_id INTEGER NOT NULL,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    UNIQUE(showtime_id, seat_id),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (showtime_id) REFERENCES showtimes(id) ON DELETE CASCADE,
+    UNIQUE(reservation_group_id, seat_id),
+    FOREIGN KEY (reservation_group_id) REFERENCES reservation_groups(id) ON DELETE CASCADE,
     FOREIGN KEY (seat_id) REFERENCES seats(id) ON DELETE CASCADE
 );
+
 `);
+
 
 // SEEDING
 if (deleteMode) {

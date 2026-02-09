@@ -14,6 +14,7 @@ import seatRouter from "./routes/seatRouter.js";
 import movieRouter from "./routes/movieRouter.js";
 import showtimeRouter from "./routes/showtimeRouter.js"
 
+import reservationRouter from "./routes/reservationRouter.js"
 
 
 import { initSocket } from "./sockets/socketIOInstance.js";
@@ -42,6 +43,8 @@ app.use("/halls", hallRouter);
 app.use("/seats", seatRouter);
 app.use("/movies", movieRouter);
 app.use("/showtimes", showtimeRouter);
+app.use("/reservations", reservationRouter);
+
 // SOCKETS
 const io = initSocket(server);
 

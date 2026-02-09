@@ -15,7 +15,7 @@ TO-DO:
                 * admin delete
 
 
-        FUTURE:
+        
                 see active reservations at dashboard with navigation to CRUD pages
 
         NICE TO HAVE: see past reservations
