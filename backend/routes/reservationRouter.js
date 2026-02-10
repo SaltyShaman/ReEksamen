@@ -55,12 +55,12 @@ router.post("/", requireLogin, async (req, res) => {
 
         await db.exec("COMMIT");
 
-        emitReservationCreated({ id: groupId });
+    emitReservationCreated({ id: group.lastID });
 
-        res.status(201).json({
-            message: "Reservation created successfully",
-            reservationGroupId: group.lastID
-        });
+    res.status(201).json({
+        message: "Reservation created successfully",
+        reservationGroupId: group.lastID
+    });
 
     } catch (err) {
         await db.exec("ROLLBACK");
