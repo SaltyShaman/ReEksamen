@@ -53,6 +53,10 @@
                     Find and delete movie in the database
                 </button>
                 
+                <button on:click={() => window.location.href = "/reservations/admin"}>
+                    Go to reservations
+                </button>
+                
 
 
             </section>

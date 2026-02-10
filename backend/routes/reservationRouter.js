@@ -55,7 +55,7 @@ router.post("/", requireLogin, async (req, res) => {
 
         await db.exec("COMMIT");
 
-        emitReservationCreated(group.lastID);
+        emitReservationCreated({ id: groupId });
 
         res.status(201).json({
             message: "Reservation created successfully",
@@ -146,7 +146,7 @@ router.put("/:groupId", requireLogin, async (req, res) => {
 
         await db.exec("COMMIT");
 
-        emitReservationUpdated(groupId);
+        emitReservationUpdated({ id: groupId });
 
         res.json({ message: "Reservation updated successfully" });
 
