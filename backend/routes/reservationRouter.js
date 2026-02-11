@@ -104,6 +104,7 @@ router.post("/", requireLogin, async (req, res) => {
 });
 
 //see own reservations
+// see own reservations
 router.get("/my", requireLogin, async (req, res) => {
     const userId = req.user.id;
     const type = req.query.type === "past" ? "<" : ">=";
@@ -113,8 +114,10 @@ router.get("/my", requireLogin, async (req, res) => {
             `
             SELECT
                 rg.id AS reservationGroupId,
+                rg.showtime_id,
                 m.title,
                 s.show_datetime,
+                GROUP_CONCAT(se.id) AS seatIds,
                 GROUP_CONCAT(se.seat_number) AS seats,
                 rg.created_at
             FROM reservation_groups rg
@@ -131,6 +134,7 @@ router.get("/my", requireLogin, async (req, res) => {
         );
 
         res.json({ reservations });
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Failed to fetch reservations" });
