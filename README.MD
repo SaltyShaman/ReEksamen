@@ -11,7 +11,6 @@ TO-DO:
                 * cancel reservation
                 * see own reservations
                 * update reservation (self)
-                * update reservation (admin)
                 * admin delete
 
 

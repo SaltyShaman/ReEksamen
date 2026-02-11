@@ -60,6 +60,10 @@
     </div>
 
     <div>
+        <a href="/reservations/create">Book reservation</a>
+    </div>
+
+    <div>
         {#if user}
             <span>Welcome, {user.username}</span>
             <button on:click={logout}>Logout</button>

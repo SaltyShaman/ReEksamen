@@ -186,6 +186,35 @@ router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
     }
 });
 
+// see showtimes by movie ID (public)
+router.get("/movie/:movieId", async (req, res) => {
+    const { movieId } = req.params;
+
+    try {
+        const showtimes = await db.all(`
+            SELECT
+                s.id,
+                s.show_datetime,
+                m.id AS movie_id,
+                m.title AS movie_title,
+                h.id AS hall_id,
+                h.name AS hall_name
+            FROM showtimes s
+            JOIN movies m ON s.movie_id = m.id
+            JOIN halls h ON s.hall_id = h.id
+            WHERE s.movie_id = ?
+            ORDER BY s.show_datetime ASC
+        `, [movieId]);
+
+        res.json({ showtimes });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch showtimes" });
+    }
+});
+
+
 // Get showtime by ID (for admin delete page)
 router.get("/:id", requireLogin, requireAdmin, async (req, res) => {
     const { id } = req.params;

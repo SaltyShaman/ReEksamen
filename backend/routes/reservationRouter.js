@@ -25,6 +25,35 @@ import {
 const router = Router();
 
 
+router.get("/showtimes/:showtimeId/seats", requireLogin, async (req, res) => {
+    const { showtimeId } = req.params;
+
+    try {
+        const seats = await db.all(`
+            SELECT
+                se.id,
+                se.seat_number,
+                CASE
+                    WHEN r.seat_id IS NOT NULL THEN 'RESERVED'
+                    ELSE 'AVAILABLE'
+                END AS status
+            FROM seats se
+            JOIN showtimes s ON s.hall_id = se.hall_id
+            LEFT JOIN reservation_groups rg ON rg.showtime_id = s.id
+            LEFT JOIN reservations r
+                ON r.seat_id = se.id
+                AND rg.id = r.reservation_group_id
+            WHERE s.id = ?
+        `, [showtimeId]);
+
+        res.json({ seats });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch seats" });
+    }
+});
+
+
 //create
 router.post("/", requireLogin, async (req, res) => {
     const userId = req.user.id;
