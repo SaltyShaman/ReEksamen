@@ -1,10 +1,58 @@
 <script>
     import { onMount } from "svelte";
     import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
+    import { goto } from "$app/navigation";
 
     let currentUser = null;
-    let authChecked = false; // track if auth is loaded
+    let authChecked = false;
     let error = "";
+
+    let reservations = [];
+
+    async function loadReservations() {
+        try {
+            const res = await fetch(
+                "http://localhost:8080/reservations/my?type=active",
+                { credentials: "include" }
+            );
+
+            if (!res.ok) {
+                reservations = [];
+                return;
+            }
+
+            const data = await res.json();
+            reservations = data.reservations ?? [];
+        } catch (err) {
+            console.error(err);
+            reservations = [];
+        }
+    }
+
+    async function cancelReservation(id) {
+        if (!confirm("Are you sure you want to cancel this reservation?")) {
+            return;
+        }
+
+        try {
+            const res = await fetch(
+                `http://localhost:8080/reservations/${id}`,
+                {
+                    method: "DELETE",
+                    credentials: "include"
+                }
+            );
+
+            if (!res.ok) return;
+
+            reservations = reservations.filter(
+                r => r.reservationGroupId !== id
+            );
+
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     onMount(async () => {
         await fetchMe();
@@ -13,6 +61,11 @@
 
         if (!$isLoggedIn) {
             error = "You must log in to access the dashboard.";
+            return;
+        }
+
+        if (currentUser.role !== "ADMIN") {
+            await loadReservations();
         }
     });
 </script>
@@ -27,6 +80,7 @@
     {:else}
         <h1>Welcome, {currentUser.username}!</h1>
 
+        <!-- ================= ADMIN SECTION (UNCHANGED) ================= -->
         {#if currentUser.role === "ADMIN"}
             <section>
                 <h2>Admin Panel</h2>
@@ -48,22 +102,69 @@
                     Register new movie in the database
                 </button>
 
-                
                 <button on:click={() => window.location.href = "/movies/delete"}>
                     Find and delete movie in the database
                 </button>
-                
+
                 <button on:click={() => window.location.href = "/reservations/admin"}>
                     Go to reservations
                 </button>
-                
-
-
             </section>
         {/if}
 
+        <!-- ================= USER SECTION ================= -->
         {#if currentUser.role !== "ADMIN"}
-            <p>This is your standard dashboard.</p>
+            <section>
+                <h2>My Active Reservations</h2>
+
+                <button on:click={() => goto("/reservations/create")}>
+                    + New Reservation
+                </button>
+
+                {#if reservations.length === 0}
+                    <p>No active reservations.</p>
+                {:else}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Movie</th>
+                                <th>Showtime</th>
+                                <th>Seats</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {#each reservations as r}
+                                <tr>
+                                    <td>{r.reservationGroupId}</td>
+                                    <td>{r.title}</td>
+                                    <td>{r.show_datetime}</td>
+                                    <td>{r.seats}</td>
+                                    <td>
+                                        <button
+                                            on:click={() =>
+                                                cancelReservation(r.reservationGroupId)
+                                            }
+                                        >
+                                            Cancel
+                                        </button>
+
+                                        <button
+                                            on:click={() =>
+                                                goto(`/reservations/${r.reservationGroupId}/edit`)
+                                            }
+                                        >
+                                            Edit
+                                        </button>
+                                    </td>
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </table>
+                {/if}
+            </section>
         {/if}
     {/if}
 </main>
