@@ -37,7 +37,6 @@
 
       showtimeId = reservation.showtime_id;
 
-      // Parse seat IDs correctly
       selectedSeats = reservation.seatIds
         ? reservation.seatIds.split(",").map(id => Number(id))
         : [];
@@ -50,11 +49,11 @@
     }
   }
 
-  /* ---------------- LOAD SEATS ---------------- */
+  /* ---------------- LOAD SEATS (FIXED) ---------------- */
   async function loadSeats(id) {
     try {
       const res = await fetch(
-        `http://localhost:8080/reservations/showtimes/${id}/seats`,
+        `http://localhost:8080/reservations/showtimes/${id}/seats?groupId=${groupId}`,
         { credentials: "include" }
       );
 

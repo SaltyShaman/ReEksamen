@@ -27,6 +27,8 @@ const router = Router();
 
 router.get("/showtimes/:showtimeId/seats", requireLogin, async (req, res) => {
     const { showtimeId } = req.params;
+    const { groupId } = req.query; // optional
+    const userId = req.user.id;
 
     try {
         const seats = await db.all(`
@@ -34,19 +36,22 @@ router.get("/showtimes/:showtimeId/seats", requireLogin, async (req, res) => {
                 se.id,
                 se.seat_number,
                 CASE
-                    WHEN r.seat_id IS NOT NULL THEN 'RESERVED'
+                    WHEN r.id IS NOT NULL
+                         AND (rg.id IS NULL OR rg.id != ?)
+                    THEN 'RESERVED'
                     ELSE 'AVAILABLE'
                 END AS status
             FROM seats se
             JOIN showtimes s ON s.hall_id = se.hall_id
-            LEFT JOIN reservation_groups rg ON rg.showtime_id = s.id
-            LEFT JOIN reservations r
-                ON r.seat_id = se.id
-                AND rg.id = r.reservation_group_id
+            LEFT JOIN reservations r ON r.seat_id = se.id
+            LEFT JOIN reservation_groups rg
+                ON rg.id = r.reservation_group_id
+                AND rg.showtime_id = s.id
             WHERE s.id = ?
-        `, [showtimeId]);
+        `, [groupId || 0, showtimeId]);
 
         res.json({ seats });
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Failed to fetch seats" });
@@ -103,7 +108,6 @@ router.post("/", requireLogin, async (req, res) => {
     }
 });
 
-//see own reservations
 // see own reservations
 router.get("/my", requireLogin, async (req, res) => {
     const userId = req.user.id;
