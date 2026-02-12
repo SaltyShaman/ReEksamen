@@ -6,21 +6,9 @@ TO-DO:
 
         NICE TO HAVE: see past reservations
 
-
-        movie entity (CRUD):
-
-                FUTURE: movies by showtime
-
-                nice to have: search by description
-
-        halls: you cannot delete halls with active showtimes
+        Styling
 
 
-
-
-
-
-seats -> reservations <- user
 
 KNOWN BUGS:
 admin list delte -> if you log in as admin and delete your own user you are not visable on the list until refresh

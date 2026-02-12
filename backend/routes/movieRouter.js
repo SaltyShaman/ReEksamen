@@ -34,6 +34,7 @@ router.get("/", async (req, res) => {
     }
 });
 
+
 //see movie by name
 router.get("/:movieId", async (req, res) => {
     const movieId = req.params.movieId;
