@@ -171,17 +171,22 @@ router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
             return res.status(404).json({ error: "Hall not found" });
         }
 
-         // Check for future showtimes
-        const futureShowtime = await db.get(
-            "SELECT id FROM showtimes WHERE hall_id = ? AND show_datetime > datetime('now') LIMIT 1",
-            [hallId]
-        );
+    // Check for active showtimes (ongoing OR future)
+    const activeShowtime = await db.get(`
+        SELECT s.id
+        FROM showtimes s
+        JOIN movies m ON s.movie_id = m.id
+        WHERE s.hall_id = ?
+        AND DATETIME(s.show_datetime, '+' || m.duration_minutes || ' minutes') > DATETIME('now')
+        LIMIT 1
+    `, [hallId]);
 
-        if (futureShowtime) {
-            return res.status(400).json({ 
-                error: "Cannot delete hall: there are future scheduled showtimes" 
-            });
-        }
+    if (activeShowtime) {
+        return res.status(400).json({
+            error: "Cannot delete hall: there are active or upcoming showtimes"
+        });
+}
+
 
         await db.run("DELETE FROM halls WHERE id = ?", [hallId]);
 
