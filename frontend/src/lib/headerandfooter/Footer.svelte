@@ -1,3 +1,6 @@
 <footer>
-    <p>&copy; 2026 Kristoffer Gillesberg</p>
+    <p>
+        &copy; {new Date().getFullYear()} Kristoffer Gillesberg.
+        All rights reserved.
+    </p>
 </footer>

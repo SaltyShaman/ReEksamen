@@ -1,46 +1,123 @@
-/* Header styles */
-header {
+/* ================= HEADER ================= */
+
+.app-header {
     padding: 1rem 2rem;
-    background-color: #f5f5f5;
+    background-color: #1f2937;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     position: sticky;
     top: 0;
     z-index: 100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-header a {
+/* Left side */
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #f3f4f6;
     text-decoration: none;
-    color: #333;
-    margin-right: 1rem;
 }
 
-header button {
-    margin-left: 1rem;
-    padding: 0.3rem 0.6rem;
+/* Main nav links */
+nav {
+    display: flex;
+    gap: 1.5rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: #e5e7eb;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+}
+
+nav a:hover {
+    color: #60a5fa;
+}
+
+/* Right side */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* User links */
+.user-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.user-links a {
+    color: #d1d5db;
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.user-links a:hover {
+    color: #60a5fa;
+}
+
+/* User info */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.user-info span {
+    color: #f3f4f6;
+    font-size: 0.9rem;
+}
+
+/* Logout button */
+.user-info button {
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    border: none;
+    background-color: #ef4444;
+    color: white;
     cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.2s ease;
 }
 
-/* Footer styles */
+.user-info button:hover {
+    background-color: #dc2626;
+}
+
+
+
+/* ================= FOOTER ================= */
+
 footer {
-    padding: 1rem 2rem;
-    background-color: #f5f5f5;
+    padding: 1.2rem 2rem;
+    background-color: #111827; /* slightly darker */
     text-align: center;
-    margin-top: auto; /* push footer to the bottom of the page */
-    box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+    margin-top: auto;
+    font-size: 0.9rem;
+    color: #9ca3af;
+    border-top: 1px solid #1f2937;
 }
 
-/* Main content */
+
+/* ================= MAIN LAYOUT ================= */
+
 main {
     padding: 2rem;
-    flex: 1; /* allows main to grow and push footer down */
+    flex: 1;
 }
 
-/* Layout wrapper to make footer sticky at bottom */
 .layout-wrapper {
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* full viewport height */
+    min-height: 100vh;
 }

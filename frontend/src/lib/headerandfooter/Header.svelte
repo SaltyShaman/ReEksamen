@@ -32,43 +32,35 @@
         }
     }
 </script>
+<header class="app-header">
 
-<header>
+    <div class="nav-left">
+        <a href="/dashboard" class="logo">🎬 CinemaApp</a>
 
-    <div>
-        <a href="/user/create">Sign up</a>
+        <nav>
+            <a href="/movies">Movies</a>
+            <a href="/showtimes">Showtimes</a>
+            <a href="/reservations/create">Book</a>
+        </nav>
     </div>
 
-    <div>
-        <a href="/dashboard">Home</a>
+    <div class="nav-right">
+
+        <div class="user-links">
+            <a href="/user/create">Sign up</a>
+            <a href="/user/change-password">Change Password</a>
+            <a href="/user/delete">Delete Account</a>
+        </div>
+
+        <div class="user-info">
+            {#if user}
+                <span>Welcome, {user.username}</span>
+                <button on:click={logout}>Logout</button>
+            {:else}
+                <a href="/login">Login</a>
+            {/if}
+        </div>
+
     </div>
 
-    <div>
-        <a href="/user/change-password">Change Password</a>
-    </div>
-
-    <div>
-        <a href="/user/delete">Delete account?</a>
-    </div>
-
-    <div>
-        <a href="/movies">Browse movies</a>
-    </div>
-
-    <div>
-        <a href="/showtimes">Browse showtimes</a>
-    </div>
-
-    <div>
-        <a href="/reservations/create">Book reservation</a>
-    </div>
-
-    <div>
-        {#if user}
-            <span>Welcome, {user.username}</span>
-            <button on:click={logout}>Logout</button>
-        {:else}
-            <a href="/login">Login</a>
-        {/if}
-    </div>
 </header>

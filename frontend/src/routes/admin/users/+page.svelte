@@ -1,16 +1,15 @@
 <script>
+    import "./admin-users.css";
     import { onMount } from "svelte";
     import { users, initUserSocket } from "$lib/stores/users.js";
     import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
 
     let errorMessage = "";
     let currentUser = null;
-    let authChecked = false; // tracks if auth has been checked
+    let authChecked = false;
 
-    // Initialize Socket.IO connection to get live updates
     initUserSocket();
 
-    // Fetch initial list of users from backend
     onMount(async () => {
         await fetchMe();
         currentUser = $authUser;
@@ -34,11 +33,9 @@
         }
     });
 
-    // Delete a user (admin only)
     async function deleteUser(userId) {
         if (!confirm("Are you sure you want to delete this user?")) return;
 
-        // Update UI immediately
         users.update(list => list.filter(u => u.id !== userId));
 
         try {
@@ -51,7 +48,6 @@
 
             if (!res.ok) {
                 alert(data.error || "Failed to delete user");
-                // Optional: reload the list or revert UI update
             }
         } catch (err) {
             console.error(err);
@@ -60,43 +56,57 @@
     }
 </script>
 
-<main>
+<main class="admin-users-page">
     {#if !authChecked}
-        <p>Checking authentication...</p>
+        <p class="status">Checking authentication...</p>
+
     {:else if !$isLoggedIn}
-        <p>You must log in to view this page.</p>
+        <p class="error">You must log in to view this page.</p>
+
     {:else if currentUser.role !== "ADMIN"}
-        <p>You are not authorized to view this page.</p>
+        <p class="error">You are not authorized to view this page.</p>
+
     {:else}
-        <h1>All Users (Admin)</h1>
+        <div class="users-card">
+            <h1>All Users</h1>
 
-        {#if errorMessage}
-            <p style="color:red">{errorMessage}</p>
-        {/if}
+            {#if errorMessage}
+                <p class="error">{errorMessage}</p>
+            {/if}
 
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Role</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each $users as user}
+            <table>
+                <thead>
                     <tr>
-                        <td>{user.id}</td>
-                        <td>{user.username}</td>
-                        <td>{user.role}</td>
-                        <td>{user.created_at}</td>
-                        <td>
-                            <button on:click={() => deleteUser(user.id)}>Delete</button>
-                        </td>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Created</th>
+                        <th>Actions</th>
                     </tr>
-                {/each}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {#each $users as user}
+                        <tr>
+                            <td>{user.id}</td>
+                            <td>{user.username}</td>
+                            <td>
+                                <span class="role-badge {user.role === 'ADMIN' ? 'admin' : 'user'}">
+                                    {user.role}
+                                </span>
+                            </td>
+                            <td>{new Date(user.created_at).toLocaleDateString()}</td>
+                            <td>
+                                <button 
+                                    class="danger"
+                                    on:click={() => deleteUser(user.id)}
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
+        </div>
     {/if}
 </main>
