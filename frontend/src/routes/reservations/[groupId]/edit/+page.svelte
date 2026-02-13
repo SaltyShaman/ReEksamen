@@ -1,4 +1,5 @@
 <script>
+  import "./edit-reservation.css";
   import { onMount } from "svelte";
   import { page } from "$app/stores";
   import { fetchMe, authUser, isLoggedIn } from "$lib/stores/auth.js";
@@ -127,41 +128,66 @@
   });
 </script>
 
-{#if !authChecked}
-  <p>Checking authentication...</p>
+<div class="edit-reservation-page">
 
-{:else if !$isLoggedIn}
-  <p>You must be logged in.</p>
+  {#if !authChecked}
+    <p class="status">Checking authentication...</p>
 
-{:else}
-  <h1>Edit Reservation</h1>
+  {:else if !$isLoggedIn}
+    <p class="error">You must be logged in.</p>
 
-  {#if error}
-    <p>{error}</p>
-  {/if}
+  {:else}
+    <div class="reservation-card">
+      <h1>Edit Reservation</h1>
 
-  {#if seats.length > 0}
-    <div>
-      {#each seats as seat}
-        <button
-          disabled={
-            seat.status === "RESERVED" &&
-            !selectedSeats.includes(seat.id)
-          }
-          on:click={() => toggleSeat(seat.id)}
-        >
-          {seat.seat_number}
-          {#if selectedSeats.includes(seat.id)}
-            (Selected)
-          {/if}
-        </button>
-      {/each}
+      {#if error}
+        <p class="error">{error}</p>
+      {/if}
+
+      {#if seats.length > 0}
+        <div class="seat-section">
+          <h3>Select Seats</h3>
+
+          <div class="seat-grid">
+            {#each seats as seat}
+              <button
+                class="seat 
+                  {seat.status === 'RESERVED' && !selectedSeats.includes(seat.id) ? 'reserved' : ''}
+                  {selectedSeats.includes(seat.id) ? 'selected' : ''}"
+                disabled={
+                  seat.status === "RESERVED" &&
+                  !selectedSeats.includes(seat.id)
+                }
+                on:click={() => toggleSeat(seat.id)}
+              >
+                {seat.seat_number}
+              </button>
+            {/each}
+          </div>
+        </div>
+
+        <div class="action-section">
+          <p class="selected-count">
+            Selected Seats: {selectedSeats.length}
+          </p>
+
+          <button
+            class="primary"
+            on:click={updateReservation}
+            disabled={loading}
+          >
+            {loading ? "Updating..." : "Save Changes"}
+          </button>
+
+          <button
+            class="secondary"
+            on:click={() => goto("/dashboard")}
+          >
+            Cancel
+          </button>
+        </div>
+      {/if}
     </div>
 
-    <br />
-
-    <button on:click={updateReservation} disabled={loading}>
-      {loading ? "Updating..." : "Save Changes"}
-    </button>
   {/if}
-{/if}
+</div>

@@ -1,4 +1,5 @@
 <script>
+  import "./create-reservation.css";
   import { onMount } from "svelte";
   import { fetchMe, authUser, isLoggedIn } from "$lib/stores/auth.js";
   import { goto } from "$app/navigation";
@@ -27,24 +28,29 @@
     }
   }
 
-  async function loadShowtimes(movieId) {
-    selectedShowtime = "";
-    seats = [];
-    selectedSeats = [];
+    async function loadShowtimes(movieId) {
+        selectedShowtime = "";
+        seats = [];
+        selectedSeats = [];
+        showtimes = [];
+        error = "";
 
-    if (!movieId) return;
+        if (!movieId) return;
 
-    try {
-      const res = await fetch(
-        `http://localhost:8080/showtimes/movie/${movieId}`
-      );
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      showtimes = data.showtimes ?? [];
-    } catch {
-      error = "Failed to load showtimes.";
+        try {
+        const res = await fetch(
+            `http://localhost:8080/showtimes/movie/${movieId}`
+            );
+            if (!res.ok) throw new Error();
+
+            const data = await res.json();
+            showtimes = data.showtimes ?? [];
+
+        } catch {
+            error = "Failed to load showtimes.";
+        }
     }
-  }
+
 
   async function loadSeats(showtimeId) {
     selectedSeats = [];
@@ -96,7 +102,6 @@
       if (!res.ok) throw new Error();
 
       goto("/dashboard");
-
     } catch {
       error = "Failed to create reservation.";
     } finally {
@@ -115,64 +120,90 @@
   });
 </script>
 
-{#if !authChecked}
-  <p>Checking authentication...</p>
+<main class="create-reservation-page">
+  {#if !authChecked}
+    <p>Checking authentication...</p>
 
-{:else if !$isLoggedIn}
-  <p>You must be logged in.</p>
+  {:else if !$isLoggedIn}
+    <p class="error">You must be logged in.</p>
 
-{:else}
-  <h1>Create Reservation</h1>
+  {:else}
+    <div class="reservation-card">
+      <h1>Create Reservation</h1>
 
-  {#if error}
-    <p>{error}</p>
-  {/if}
+      {#if error}
+        <p class="error">{error}</p>
+      {/if}
 
-  <div>
-    <label>Movie:</label>
-    <select bind:value={selectedMovie} on:change={(e) => loadShowtimes(e.target.value)}>
-      <option value="">Select movie</option>
-      {#each movies as movie}
-        <option value={movie.id}>{movie.title}</option>
-      {/each}
-    </select>
-  </div>
-
-  {#if showtimes.length > 0}
-    <div>
-      <label>Showtime:</label>
-      <select bind:value={selectedShowtime} on:change={(e) => loadSeats(e.target.value)}>
-        <option value="">Select showtime</option>
-        {#each showtimes as s}
-          <option value={s.id}>{s.show_datetime}</option>
-        {/each}
-      </select>
-    </div>
-  {/if}
-
-  {#if seats.length > 0}
-    <div>
-      <h3>Seats</h3>
-      {#each seats as seat}
-        <button
-          disabled={seat.status === "RESERVED"}
-          on:click={() => toggleSeat(seat.id)}
+      <!-- Movie -->
+      <div class="form-group">
+        <label>Movie</label>
+        <select
+          bind:value={selectedMovie}
+          on:change={(e) => loadShowtimes(e.target.value)}
         >
-          {seat.seat_number}
-          {#if selectedSeats.includes(seat.id)}
-            (Selected)
-          {/if}
-        </button>
-      {/each}
-    </div>
-  {/if}
+          <option value="">Select movie</option>
+          {#each movies as movie}
+            <option value={movie.id}>{movie.title}</option>
+          {/each}
+        </select>
+      </div>
 
-  {#if selectedSeats.length > 0}
-    <div>
-      <p>Selected Seats: {selectedSeats.length}</p>
-      <button on:click={createReservation} disabled={loading}>
-        {loading ? "Creating..." : "Confirm Reservation"}
-      </button>
+      <!-- Showtime -->
+      {#if showtimes.length > 0}
+        <div class="form-group">
+          <label>Showtime</label>
+          <select
+            bind:value={selectedShowtime}
+            on:change={(e) => loadSeats(e.target.value)}
+          >
+            <option value="">Select showtime</option>
+            {#each showtimes as s}
+              <option value={s.id}>
+                {new Date(s.show_datetime).toLocaleString()}
+              </option>
+            {/each}
+          </select>
+        </div>
+      {/if}
+
+        {#if selectedMovie && showtimes.length === 0}
+        <p class="info-message">
+             No upcoming showtimes available for this movie.
+        </p>
+        {/if}
+
+      <!-- Seats -->
+      {#if seats.length > 0}
+        <div class="seats-section">
+          <h3>Select Seats</h3>
+
+          <div class="seat-grid">
+            {#each seats as seat}
+              <button
+                class="seat
+                  {seat.status === 'RESERVED' ? 'reserved' : ''}
+                  {selectedSeats.includes(seat.id) ? 'selected' : ''}"
+                disabled={seat.status === "RESERVED"}
+                on:click={() => toggleSeat(seat.id)}
+              >
+                {seat.seat_number}
+              </button>
+            {/each}
+          </div>
+        </div>
+      {/if}
+
+      <!-- Confirm -->
+      {#if selectedSeats.length > 0}
+        <div class="confirm-box">
+          <p><strong>Selected Seats:</strong> {selectedSeats.length}</p>
+
+          <button on:click={createReservation} disabled={loading}>
+            {loading ? "Creating..." : "Confirm Reservation"}
+          </button>
+        </div>
+      {/if}
     </div>
   {/if}
-{/if}
+</main>

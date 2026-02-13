@@ -1,0 +1,72 @@
+/* Page Layout */
+.admin-reservations-page {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+/* Heading */
+.admin-reservations-page h1 {
+  margin-bottom: 20px;
+  font-size: 28px;
+}
+
+/* Card Container */
+.admin-reservations-page table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Table Header */
+.admin-reservations-page thead {
+  background-color: #f5f7fa;
+}
+
+.admin-reservations-page th {
+  text-align: left;
+  padding: 14px 16px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #eaeaea;
+}
+
+/* Table Rows */
+.admin-reservations-page td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+.admin-reservations-page tbody tr:hover {
+  background-color: #f9fafc;
+}
+
+/* Delete Button */
+.admin-reservations-page button {
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+/* Danger style */
+.admin-reservations-page button {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.admin-reservations-page button:hover {
+  background-color: #c0392b;
+}
+
+/* Error message */
+.admin-reservations-page p[style] {
+  margin-bottom: 15px;
+}

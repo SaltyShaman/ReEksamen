@@ -1,4 +1,5 @@
 <script>
+  import "./admin-reservations.css";
   import { onMount, onDestroy } from "svelte";
   import { fetchMe, authUser, isLoggedIn } from "$lib/stores/auth.js";
   import {
@@ -85,7 +86,7 @@
   });
 </script>
 
-<main>
+<main class="admin-reservations-page">
   {#if !authChecked}
     <p>Checking authentication...</p>
 
