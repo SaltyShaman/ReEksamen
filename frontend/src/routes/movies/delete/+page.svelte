@@ -1,4 +1,5 @@
 <script>
+  import "./movie-delete.css";
   import { onMount } from "svelte";
   import { writable, derived } from "svelte/store";
   import { goto } from "$app/navigation";
@@ -76,67 +77,74 @@
     }
   }
 </script>
-
-<main>
+<main class="delete-movies-page">
   {#if !authChecked}
     <p>Checking authentication...</p>
 
   {:else if !$isLoggedIn}
-    <p>You must be logged in to view this page.</p>
+    <p class="error">You must be logged in to view this page.</p>
 
   {:else if currentUser.role !== "ADMIN"}
-    <p>You are not authorized to delete movies.</p>
+    <p class="error">You are not authorized to delete movies.</p>
 
   {:else}
     <h1>Delete Movies</h1>
 
     {#if errorMessage}
-      <p style="color:red">{errorMessage}</p>
+      <p class="error">{errorMessage}</p>
     {/if}
 
-    <input
-      type="text"
-      placeholder="Search movies by title..."
-      bind:value={$searchQuery}
-    />
+    <div class="search-bar">
+      <input
+        type="text"
+        placeholder="Search movies by title..."
+        bind:value={$searchQuery}
+      />
+    </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Duration</th>
-          <th>Release Date</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each $filteredMovies as movie}
+    <div class="table-wrapper">
+      <table>
+        <thead>
           <tr>
-            <td>{movie.title}</td>
-            <td>{movie.duration_minutes} min</td>
-            <td>{movie.release_date || "-"}</td>
-            <td>
-              <button
-                on:click={() => deleteMovie(movie)}
-              >
-                Delete
-              </button>
-            </td>
+            <th>Title</th>
+            <th>Duration</th>
+            <th>Release Date</th>
+            <th>Actions</th>
           </tr>
-        {/each}
+        </thead>
 
-        {#if $filteredMovies.length === 0}
-          <tr>
-            <td colspan="4" style="text-align:center">
-              No movies found
-            </td>
-          </tr>
-        {/if}
-      </tbody>
-    </table>
+        <tbody>
+          {#each $filteredMovies as movie}
+            <tr>
+              <td>{movie.title}</td>
+              <td>{movie.duration_minutes} min</td>
+              <td>{movie.release_date || "-"}</td>
+              <td>
+                <button
+                  class="danger"
+                  on:click={() => deleteMovie(movie)}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          {/each}
 
-    <button on:click={() => goto("/dashboard")}>
-      Back to dashboard
-    </button>
+          {#if $filteredMovies.length === 0}
+            <tr>
+              <td colspan="4" class="empty">
+                No movies found
+              </td>
+            </tr>
+          {/if}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="back-button">
+      <button on:click={() => goto("/dashboard")}>
+        Back to dashboard
+      </button>
+    </div>
   {/if}
 </main>

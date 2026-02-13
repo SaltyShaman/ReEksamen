@@ -1,0 +1,94 @@
+.delete-movies-page {
+    padding: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Heading */
+.delete-movies-page h1 {
+    margin-bottom: 1.5rem;
+}
+
+/* Error */
+.error {
+    color: #dc2626;
+    margin-bottom: 1rem;
+}
+
+/* Search */
+.search-bar {
+    margin-bottom: 1.5rem;
+}
+
+.search-bar input {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+/* Table */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+thead {
+    background-color: #f3f4f6;
+}
+
+th, td {
+    padding: 0.9rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+/* Delete Button */
+.danger {
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.danger:hover {
+    background-color: #b91c1c;
+}
+
+/* Empty state */
+.empty {
+    text-align: center;
+    padding: 2rem;
+    color: #777;
+}
+
+/* Back Button */
+.back-button {
+    margin-top: 2rem;
+}
+
+.back-button button {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.back-button button:hover {
+    background-color: #f3f4f6;
+}

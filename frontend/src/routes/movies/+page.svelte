@@ -1,10 +1,9 @@
 <script>
+  import "./movies.css";
   import { onMount } from "svelte";
   import { writable, derived } from "svelte/store";
   import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
   import { goto } from "$app/navigation";
-
-
 
   let errorMessage = "";
   let authChecked = false;
@@ -13,7 +12,6 @@
   let movies = writable([]);
   let searchQuery = writable("");
 
-  // Filter movies based on search query
   const filteredMovies = derived(
     [movies, searchQuery],
     ([$movies, $searchQuery]) =>
@@ -54,13 +52,12 @@
         return;
       }
 
-      loadMovies(); // refresh list
+      loadMovies();
     } catch (err) {
       console.error(err);
       alert("Server error while deleting movie");
     }
   }
-
 
   onMount(async () => {
     await fetchMe();
@@ -70,73 +67,73 @@
   });
 </script>
 
-<main>
+<main class="movies-page">
   <h1>Available Movies</h1>
 
   {#if errorMessage}
-    <p style="color:red">{errorMessage}</p>
+    <p class="error">{errorMessage}</p>
   {/if}
 
-   <!-- Admin controls -->
   {#if authChecked && $isLoggedIn && currentUser?.role === "ADMIN"}
-    <div style="margin-bottom: 1rem;">
-      <button on:click={() => goto("/movies/create")}>
-        ➕ Create Movie
+    <div class="admin-actions">
+      <button class="primary" on:click={() => goto("/movies/create")}>
+        + Create Movie
       </button>
     </div>
   {/if}
 
+  <div class="search-bar">
+    <input
+      type="text"
+      placeholder="Search movies by title..."
+      bind:value={$searchQuery}
+    />
+  </div>
 
-  <!-- Search input -->
-  <input
-    type="text"
-    placeholder="Search movies by title..."
-    bind:value={$searchQuery}
-  />
-
-  <table>
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Description</th>
-        <th>Duration (minutes)</th>
-        <th>Release Date</th>
-
-        {#if authChecked && $isLoggedIn && currentUser?.role === "ADMIN"}
-          <th>Actions</th>
-        {/if}
-
-      </tr>
-    </thead>
-    <tbody>
-      {#each $filteredMovies as movie}
+  <div class="table-wrapper">
+    <table>
+      <thead>
         <tr>
-          <td>{movie.title}</td>
-          <td>{movie.description || "-"}</td>
-          <td>{movie.duration_minutes}</td>
-          <td>{movie.release_date || "-"}</td>
-
+          <th>Title</th>
+          <th>Description</th>
+          <th>Duration</th>
+          <th>Release Date</th>
           {#if authChecked && $isLoggedIn && currentUser?.role === "ADMIN"}
-            <td>
-              <button
-                style="color:red"
-                on:click={() => deleteMovie(movie.id)}
-              >
-                Delete
-              </button>
-            </td>
+            <th>Actions</th>
           {/if}
-
         </tr>
-      {/each}
+      </thead>
 
-      {#if $filteredMovies.length === 0}
-        <tr>
-          <td>No movies found.</td>
-        </tr>
-      {/if}
-    </tbody>
-  </table>
+      <tbody>
+        {#each $filteredMovies as movie}
+          <tr>
+            <td>{movie.title}</td>
+            <td>{movie.description || "-"}</td>
+            <td>{movie.duration_minutes} min</td>
+            <td>{movie.release_date || "-"}</td>
+
+            {#if authChecked && $isLoggedIn && currentUser?.role === "ADMIN"}
+              <td>
+                <button
+                  class="danger"
+                  on:click={() => deleteMovie(movie.id)}
+                >
+                  Delete
+                </button>
+              </td>
+            {/if}
+          </tr>
+        {/each}
+
+        {#if $filteredMovies.length === 0}
+          <tr>
+            <td colspan="5" class="empty">
+              No movies found.
+            </td>
+          </tr>
+        {/if}
+      </tbody>
+    </table>
+  </div>
 </main>
-
 

@@ -1,4 +1,5 @@
 <script>
+  import "./movie-create.css";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
@@ -66,55 +67,63 @@
     }
   }
 </script>
-
-<main>
+<main class="movie-create-page">
   {#if !authChecked}
     <p>Checking authentication...</p>
 
   {:else if !$isLoggedIn}
-    <p>You must be logged in to access this page.</p>
+    <p class="error">You must be logged in to access this page.</p>
 
   {:else if currentUser.role !== "ADMIN"}
-    <p>You are not authorized to create movies.</p>
+    <p class="error">You are not authorized to create movies.</p>
 
   {:else}
     <h1>Create Movie</h1>
 
     {#if errorMessage}
-      <p style="color:red">{errorMessage}</p>
+      <p class="error">{errorMessage}</p>
     {/if}
 
     {#if successMessage}
-      <p style="color:green">{successMessage}</p>
+      <p class="success">{successMessage}</p>
     {/if}
 
-    <form on:submit|preventDefault={createMovie}>
-      <label>
-        Title *
+    <form on:submit|preventDefault={createMovie} class="movie-form">
+
+      <div class="form-group">
+        <label>Title *</label>
         <input type="text" bind:value={title} required />
-      </label>
+      </div>
 
-      <label>
-        Description
+      <div class="form-group">
+        <label>Description</label>
         <textarea bind:value={description}></textarea>
-      </label>
+      </div>
 
-      <label>
-        Duration (minutes) *
+      <div class="form-group">
+        <label>Duration (minutes) *</label>
         <input type="number" bind:value={durationMinutes} min="1" required />
-      </label>
+      </div>
 
-      <label>
-        Release Date
+      <div class="form-group">
+        <label>Release Date</label>
         <input type="date" bind:value={releaseDate} />
-      </label>
+      </div>
 
-      <div>
-        <button type="submit">Create Movie</button>
-        <button type="button" on:click={() => goto("/dashboard")}>
+      <div class="form-actions">
+        <button type="submit" class="primary">
+          Create Movie
+        </button>
+
+        <button
+          type="button"
+          class="secondary"
+          on:click={() => goto("/dashboard")}
+        >
           Cancel
         </button>
       </div>
+
     </form>
   {/if}
 </main>
