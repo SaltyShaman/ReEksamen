@@ -1,0 +1,84 @@
+.showtimes-page {
+    padding: 2rem;
+}
+
+/* Top section */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.top-bar input {
+    padding: 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    min-width: 250px;
+}
+
+/* Table wrapper */
+.table-wrapper {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: #f3f4f6;
+}
+
+th,
+td {
+    padding: 0.9rem 1rem;
+    text-align: left;
+}
+
+tbody tr {
+    border-top: 1px solid #eee;
+}
+
+tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+/* Buttons */
+.primary {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.primary:hover {
+    background-color: #1d4ed8;
+}
+
+.danger {
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.danger:hover {
+    background-color: #b91c1c;
+}
+
+.empty {
+    margin-top: 1rem;
+    color: #555;
+}

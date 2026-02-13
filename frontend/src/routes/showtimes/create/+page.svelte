@@ -1,4 +1,5 @@
 <script>
+    import "./showtime-create.css";
     import { onMount } from "svelte";
     import { showtimes } from "$lib/stores/showtimes.js";
     import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
@@ -94,50 +95,70 @@ async function handleCreate() {
 
 </script>
 
-<main>
+<main class="showtime-create-page">
     {#if !authChecked}
         <p>Checking authentication...</p>
+
     {:else if !$isLoggedIn || currentUser.role !== "ADMIN"}
-        <p>You are not authorized to view this page.</p>
+        <p class="error">You are not authorized to view this page.</p>
+
     {:else}
         <h1>Create New Showtime</h1>
 
-        {#if errorMessage}<p style="color:red">{errorMessage}</p>{/if}
-        {#if successMessage}<p style="color:green">{successMessage}</p>{/if}
+        {#if errorMessage}
+            <p class="error">{errorMessage}</p>
+        {/if}
 
-        <form on:submit|preventDefault={handleCreate}>
-            <label>
-                Search Movie:
-                <input type="text" placeholder="Type to search..." bind:value={movieSearch} />
-            </label>
+        {#if successMessage}
+            <p class="success">{successMessage}</p>
+        {/if}
 
-            <label>
-                Movie:
+        <form on:submit|preventDefault={handleCreate} class="showtime-form">
+
+
+            <div class="form-group">
+                <label>Movie *</label>
                 <select bind:value={selectedMovieId} required>
                     <option value="">Select a movie</option>
                     {#each filteredMovies as movie}
                         <option value={movie.id}>{movie.title}</option>
                     {/each}
                 </select>
-            </label>
+            </div>
 
-            <label>
-                Hall:
+            <div class="form-group">
+                <label>Hall *</label>
                 <select bind:value={selectedHallId} required>
                     <option value="">Select a hall</option>
                     {#each $halls as hall}
                         <option value={hall.id}>{hall.name}</option>
                     {/each}
                 </select>
-            </label>
+            </div>
 
-            <label>
-                Show Date & Time:
-                <input type="datetime-local" bind:value={showDateTime} required />
-            </label>
+            <div class="form-group">
+                <label>Show Date & Time *</label>
+                <input
+                    type="datetime-local"
+                    bind:value={showDateTime}
+                    required
+                />
+            </div>
 
-            <button type="submit">Create Showtime</button>
-            <button type="button" on:click={() => goto("/showtimes")}>Cancel</button>
+            <div class="form-actions">
+                <button type="submit" class="primary">
+                    Create Showtime
+                </button>
+
+                <button
+                    type="button"
+                    class="secondary"
+                    on:click={() => goto("/showtimes")}
+                >
+                    Cancel
+                </button>
+            </div>
+
         </form>
     {/if}
 </main>

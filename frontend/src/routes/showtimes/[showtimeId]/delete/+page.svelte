@@ -1,4 +1,5 @@
 <script>
+    import "./showtime-delete.css";
     import { page } from "$app/stores";
     import { onMount } from "svelte";
     import { showtimes } from "$lib/stores/showtimes.js";
@@ -62,24 +63,43 @@
 
 
 
-<main>
+<main class="showtime-delete-page">
     {#if !authChecked}
         <p>Checking authentication...</p>
 
     {:else if !$isLoggedIn || $authUser.role !== "ADMIN"}
-        <p>Not authorized</p>
+        <p class="error">Not authorized</p>
 
     {:else if errorMessage}
-        <p>{errorMessage}</p>
+        <p class="error">{errorMessage}</p>
 
     {:else if showtime}
-        <h1>Delete Showtime</h1>
+        <div class="delete-card">
+            <h1>Delete Showtime</h1>
 
-        <p><strong>Movie:</strong> {showtime.movie_title}</p>
-        <p><strong>Hall:</strong> {showtime.hall_name}</p>
-        <p><strong>Date:</strong> {new Date(showtime.show_datetime).toLocaleString()}</p>
+            <p class="warning-text">
+                This action cannot be undone.
+            </p>
 
-        <button on:click={deleteShowtime}>Confirm Delete</button>
-        <button on:click={() => goto("/showtimes")}>Cancel</button>
+            <div class="showtime-info">
+                <p><strong>Movie:</strong> {showtime.movie_title}</p>
+                <p><strong>Hall:</strong> {showtime.hall_name}</p>
+                <p><strong>Date:</strong> {new Date(showtime.show_datetime).toLocaleString()}</p>
+            </div>
+
+            {#if successMessage}
+                <p class="success">{successMessage}</p>
+            {/if}
+
+            <div class="actions">
+                <button class="danger" on:click={deleteShowtime}>
+                    Confirm Delete
+                </button>
+
+                <button class="secondary" on:click={() => goto("/showtimes")}>
+                    Cancel
+                </button>
+            </div>
+        </div>
     {/if}
 </main>

@@ -98,6 +98,8 @@
             </div>
         </div>
 
+        
+
         <div class="admin-group">
             <h3>Halls</h3>
             <div class="button-group">
@@ -118,6 +120,15 @@
                 </button>
                 <button on:click={() => window.location.href = "/movies/delete"}>
                     Delete movie
+                </button>
+            </div>
+        </div>
+
+        <div class="admin-group">
+            <h3>Showtimes</h3>
+            <div class="button-group">
+                <button on:click={() => window.location.href = "/showtimes"}>
+                    Manage showtimes
                 </button>
             </div>
         </div>

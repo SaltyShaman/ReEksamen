@@ -153,7 +153,7 @@ router.post("/", requireLogin, requireAdmin, async (req, res) => {
     }
 });
 
-// Delete showtime
+//Delete showtime
 router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
     const showtimeId = req.params.id;
 
@@ -163,28 +163,48 @@ router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
 
     try {
         // Check if showtime exists
-        const showtime = await db.get("SELECT * FROM showtimes WHERE id = ?", [showtimeId]);
-        if (!showtime) return res.status(404).json({ error: "Showtime not found" });
+        const showtime = await db.get(
+            "SELECT * FROM showtimes WHERE id = ?",
+            [showtimeId]
+        );
 
-        // Check for reservations
-        const reservations = await db.all("SELECT id FROM reservations WHERE showtime_id = ?", [showtimeId]);
-        if (reservations.length > 0) {
-            return res.status(400).json({ error: "Cannot delete showtime: there are existing reservations" });
+        if (!showtime) {
+            return res.status(404).json({ error: "Showtime not found" });
+        }
+
+        // ✅ Correct reservation check (via reservation_groups)
+        const existingReservations = await db.get(
+            `
+            SELECT rg.id
+            FROM reservation_groups rg
+            WHERE rg.showtime_id = ?
+            LIMIT 1
+            `,
+            [showtimeId]
+        );
+
+        if (existingReservations) {
+            return res.status(400).json({
+                error: "Cannot delete showtime: there are existing reservations"
+            });
         }
 
         // Delete showtime
-        await db.run("DELETE FROM showtimes WHERE id = ?", [showtimeId]);
+        await db.run(
+            "DELETE FROM showtimes WHERE id = ?",
+            [showtimeId]
+        );
 
-        // Emit socket event
         emitShowtimeDeleted(showtimeId);
 
         res.json({ message: "Showtime deleted", id: showtimeId });
 
     } catch (err) {
-        console.error(err);
+        console.error("DELETE SHOWTIME ERROR:", err);
         res.status(500).json({ error: "Failed to delete showtime" });
     }
 });
+
 
 // see showtimes by movie ID (public)
 router.get("/movie/:movieId", async (req, res) => {
