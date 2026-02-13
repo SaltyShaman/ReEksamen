@@ -1,4 +1,6 @@
 <script>
+    import "./login.css";
+
     let username = "";
     let password = "";
     let errorMessage = "";
@@ -34,24 +36,26 @@
     }
 </script>
 
-<main>
-    <h1>Login</h1>
+<main class="login-page">
+    <div class="login-card">
+        <h1>Login</h1>
 
-    <form on:submit={handleLogin}>
-        <div>
-            <label for="username">Username:</label>
-            <input id="username" bind:value={username} required />
-        </div>
+        <form on:submit={handleLogin}>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input id="username" bind:value={username} required />
+            </div>
 
-        <div>
-            <label for="password">Password:</label>
-            <input type="password" bind:value={password} required />
-        </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" bind:value={password} required />
+            </div>
 
-        {#if errorMessage}
-            <p style="color:red">{errorMessage}</p>
-        {/if}
+            {#if errorMessage}
+                <p class="error">{errorMessage}</p>
+            {/if}
 
-        <button type="submit">Login</button>
-    </form>
+            <button type="submit">Login</button>
+        </form>
+    </div>
 </main>
