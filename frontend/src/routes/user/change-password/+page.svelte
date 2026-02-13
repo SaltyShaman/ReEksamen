@@ -1,4 +1,5 @@
 <script>
+    import "./change-password.css";
     import { initUserSocket } from "$lib/stores/users.js";
     import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
     import { onMount } from "svelte";
@@ -55,27 +56,37 @@
     }
 </script>
 
-<main>
+<main class="change-password-page">
     {#if !authChecked}
         <p>Checking authentication...</p>
 
     {:else if !$isLoggedIn}
-        <p style="color:red">{errorMessage}</p>
+        <p class="error">{errorMessage}</p>
 
     {:else}
-        <h1>Change Password</h1>
+        <div class="change-password-card">
+            <h1>Change Password</h1>
 
-        <form on:submit={handleChangePassword}>
-            <input
-                type="password"
-                placeholder="New password"
-                bind:value={newPassword}
-                required
-            />
-            <button>Update Password</button>
-        </form>
+            <form on:submit={handleChangePassword}>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input
+                        type="password"
+                        bind:value={newPassword}
+                        required
+                    />
+                </div>
 
-        {#if errorMessage}<p class="error">{errorMessage}</p>{/if}
-        {#if successMessage}<p class="success">{successMessage}</p>{/if}
+                <button type="submit">Update Password</button>
+            </form>
+
+            {#if errorMessage}
+                <p class="error">{errorMessage}</p>
+            {/if}
+
+            {#if successMessage}
+                <p class="success">{successMessage}</p>
+            {/if}
+        </div>
     {/if}
 </main>

@@ -1,4 +1,5 @@
 <script>
+    import "./delete-user.css";
     import { initUserSocket } from "$lib/stores/users.js";
     import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
     import { onMount } from "svelte";
@@ -11,7 +12,6 @@
     initUserSocket();
 
     onMount(async () => {
-        // Fetch authenticated user
         await fetchMe();
         currentUser = $authUser;
         authChecked = true;
@@ -49,21 +49,32 @@
     }
 </script>
 
-<main>
+<main class="delete-page">
     {#if !authChecked}
         <p>Checking authentication...</p>
 
     {:else if !$isLoggedIn}
-        <p style="color:red">{errorMessage}</p>
+        <p class="error">{errorMessage}</p>
 
     {:else}
-        <h1>Delete My Account</h1>
+        <div class="delete-card">
+            <h1>Delete My Account</h1>
 
-        <button on:click={deleteAccount} class="danger">
-            Delete My Account
-        </button>
+            <p class="warning-text">
+                This action is permanent. Your account and all associated data will be removed.
+            </p>
 
-        {#if errorMessage}<p class="error">{errorMessage}</p>{/if}
-        {#if successMessage}<p class="success">{successMessage}</p>{/if}
+            <button on:click={deleteAccount} class="danger">
+                Delete My Account
+            </button>
+
+            {#if errorMessage}
+                <p class="error">{errorMessage}</p>
+            {/if}
+
+            {#if successMessage}
+                <p class="success">{successMessage}</p>
+            {/if}
+        </div>
     {/if}
 </main>
