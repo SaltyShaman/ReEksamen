@@ -1,0 +1,120 @@
+/* Scope everything so header is untouched */
+
+.admin-panel {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.admin-group {
+    padding: 1.5rem;
+    border-radius: 10px;
+    background: #f8fafc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.admin-group h3 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.button-group button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.button-group button:hover {
+    background: #e2e8f0;
+}
+
+/* ================= USER SECTION ================= */
+
+.user-section {
+    margin-top: 3rem;
+    padding: 2rem;
+    border-radius: 12px;
+    background: #f8fafc;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.user-section h2 {
+    margin-bottom: 1.5rem;
+}
+
+.user-actions {
+    margin-bottom: 1.5rem;
+}
+
+.user-actions button {
+    padding: 0.7rem 1.4rem;
+    border-radius: 6px;
+    border: none;
+    background-color: #3b82f6;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.user-actions button:hover {
+    background-color: #2563eb;
+}
+
+/* ================= TABLE ================= */
+
+.reservation-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.reservation-table thead {
+    background-color: #e2e8f0;
+}
+
+.reservation-table th,
+.reservation-table td {
+    padding: 0.9rem 1rem;
+    text-align: left;
+}
+
+.reservation-table th {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.reservation-table tbody tr {
+    border-top: 1px solid #e5e7eb;
+}
+
+.reservation-table tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+/* Action buttons inside table */
+
+.reservation-table td button {
+    padding: 0.4rem 0.8rem;
+    margin-right: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reservation-table td button:hover {
+    background-color: #e2e8f0;
+}

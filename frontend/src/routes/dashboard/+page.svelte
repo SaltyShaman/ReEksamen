@@ -1,4 +1,5 @@
 <script>
+    import "./dashboard.css";
     import { onMount } from "svelte";
     import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
     import { goto } from "$app/navigation";
@@ -80,51 +81,73 @@
     {:else}
         <h1>Welcome, {currentUser.username}!</h1>
 
-        <!-- ================= ADMIN SECTION (UNCHANGED) ================= -->
-        {#if currentUser.role === "ADMIN"}
-            <section>
-                <h2>Admin Panel</h2>
+<!-- ================= ADMIN SECTION ================= -->
+{#if currentUser.role === "ADMIN"}
+    <section class="admin-panel">
+        <h2>Admin Panel</h2>
+
+        <div class="admin-group">
+            <h3>Users</h3>
+            <div class="button-group">
                 <button on:click={() => window.location.href = "/admin/users"}>
                     Full User List
                 </button>
                 <button on:click={() => window.location.href = "/admin/search"}>
                     Search Users
                 </button>
+            </div>
+        </div>
+
+        <div class="admin-group">
+            <h3>Halls</h3>
+            <div class="button-group">
                 <button on:click={() => window.location.href = "/halls"}>
                     See all halls
                 </button>
-
                 <button on:click={() => window.location.href = "/halls/search"}>
                     Search halls
                 </button>
+            </div>
+        </div>
 
+        <div class="admin-group">
+            <h3>Movies</h3>
+            <div class="button-group">
                 <button on:click={() => window.location.href = "/movies/create"}>
-                    Register new movie in the database
+                    Register new movie
                 </button>
-
                 <button on:click={() => window.location.href = "/movies/delete"}>
-                    Find and delete movie in the database
+                    Delete movie
                 </button>
+            </div>
+        </div>
 
+        <div class="admin-group">
+            <h3>Reservations</h3>
+            <div class="button-group">
                 <button on:click={() => window.location.href = "/reservations/admin"}>
-                    Go to reservations
+                    Manage Reservations
                 </button>
-            </section>
-        {/if}
+            </div>
+        </div>
+    </section>
+{/if}
 
         <!-- ================= USER SECTION ================= -->
         {#if currentUser.role !== "ADMIN"}
-            <section>
+           <section class="user-section">
                 <h2>My Active Reservations</h2>
 
-                <button on:click={() => goto("/reservations/create")}>
-                    + New Reservation
-                </button>
+        <div class="user-actions">
+            <button on:click={() => goto("/reservations/create")}>
+                + New Reservation
+            </button>
+        </div>
 
                 {#if reservations.length === 0}
                     <p>No active reservations.</p>
                 {:else}
-                    <table>
+                    <table class="reservation-table">
                         <thead>
                             <tr>
                                 <th>ID</th>
