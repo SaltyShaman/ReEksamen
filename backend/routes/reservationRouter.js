@@ -31,24 +31,25 @@ router.get("/showtimes/:showtimeId/seats", requireLogin, async (req, res) => {
     const userId = req.user.id;
 
     try {
-        const seats = await db.all(`
-            SELECT
-                se.id,
-                se.seat_number,
-                CASE
-                    WHEN r.id IS NOT NULL
-                         AND (rg.id IS NULL OR rg.id != ?)
+            const seats = await db.all(`
+                    SELECT
+                    se.id,
+                    se.seat_number,
+                    CASE
+                    WHEN r.seat_id IS NOT NULL
+                        AND (rg.id IS NULL OR rg.id != ?)
                     THEN 'RESERVED'
                     ELSE 'AVAILABLE'
-                END AS status
-            FROM seats se
-            JOIN showtimes s ON s.hall_id = se.hall_id
-            LEFT JOIN reservations r ON r.seat_id = se.id
-            LEFT JOIN reservation_groups rg
-                ON rg.id = r.reservation_group_id
-                AND rg.showtime_id = s.id
-            WHERE s.id = ?
-        `, [groupId || 0, showtimeId]);
+                    END AS status
+                    FROM seats se
+                    JOIN showtimes s ON s.hall_id = se.hall_id
+                    LEFT JOIN reservation_groups rg
+                    ON rg.showtime_id = s.id
+                    LEFT JOIN reservations r
+                    ON r.seat_id = se.id
+                    AND r.reservation_group_id = rg.id
+                    WHERE s.id = ?
+                    `, [groupId || 0, showtimeId]);
 
         res.json({ seats });
 
