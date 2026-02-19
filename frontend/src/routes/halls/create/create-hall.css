@@ -1,0 +1,99 @@
+/* ================= PAGE ================= */
+
+.hall-create-page {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #1f2937;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    color: #f3f4f6;
+}
+
+/* ================= HEADINGS ================= */
+
+.hall-create-page h1 {
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+}
+
+/* ================= FORM ================= */
+
+.hall-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    color: #d1d5db;
+}
+
+.form-group input {
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #374151;
+    background-color: #111827;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #60a5fa;
+}
+
+/* ================= BUTTONS ================= */
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.primary {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s ease;
+}
+
+.primary:hover {
+    background-color: #2563eb;
+}
+
+.secondary {
+    background-color: #374151;
+    color: #e5e7eb;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.secondary:hover {
+    background-color: #4b5563;
+}
+
+/* ================= MESSAGES ================= */
+
+.error {
+    color: #ef4444;
+    font-size: 0.9rem;
+}
+
+.success {
+    color: #22c55e;
+    font-size: 0.9rem;
+}

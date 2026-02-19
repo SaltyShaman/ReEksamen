@@ -4,6 +4,7 @@
     import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
     import { page } from "$app/stores";
     import { goto } from "$app/navigation";
+    import "./hall-update.css";
 
     let currentUser = null;
     let authChecked = false;
@@ -78,40 +79,65 @@
     }
 </script>
 
-
-<main>
+<main class="hall-update-page">
     {#if !authChecked}
         <p>Checking authentication...</p>
+
     {:else if !$isLoggedIn}
-        <p>You must log in to view this page.</p>
+        <p class="error">You must log in to view this page.</p>
+
     {:else if currentUser.role !== "ADMIN"}
-        <p>You are not authorized to view this page.</p>
+        <p class="error">You are not authorized to view this page.</p>
+
     {:else}
-        <h1>Update Hall Name</h1>
+        <div class="update-card">
+            <h1>Update Hall Name</h1>
 
-        {#if errorMessage}
-            <p style="color:red">{errorMessage}</p>
-        {/if}
+            {#if errorMessage}
+                <p class="error">{errorMessage}</p>
+            {/if}
 
-        {#if successMessage}
-            <p style="color:green">{successMessage}</p>
-        {/if}
+            {#if successMessage}
+                <p class="success">{successMessage}</p>
+            {/if}
 
-        <form on:submit|preventDefault={updateHall}>
-            <!-- Immutable Current Name -->
-            <label>
-                Current Hall Name:
-                <input type="text" bind:value={currentHallName} readonly />
-            </label>
+            <form on:submit|preventDefault={updateHall} class="update-form">
 
-            <!-- Editable New Name -->
-            <label>
-                New Hall Name:
-                <input type="text" bind:value={newHallName} placeholder="Enter new hall name" required />
-            </label>
+                <div class="form-group">
+                    <label>Current Hall Name</label>
+                    <input
+                        type="text"
+                        bind:value={currentHallName}
+                        readonly
+                        class="readonly"
+                    />
+                </div>
 
-            <button type="submit">Update</button>
-            <button type="button" on:click={() => goto("/halls")}>Cancel</button>
-        </form>
+                <div class="form-group">
+                    <label>New Hall Name</label>
+                    <input
+                        type="text"
+                        bind:value={newHallName}
+                        placeholder="Enter new hall name"
+                        required
+                    />
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="primary">
+                        Update Hall
+                    </button>
+
+                    <button
+                        type="button"
+                        class="secondary"
+                        on:click={() => goto("/halls")}
+                    >
+                        Cancel
+                    </button>
+                </div>
+
+            </form>
+        </div>
     {/if}
 </main>

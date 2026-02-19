@@ -1,0 +1,115 @@
+/* ================= PAGE WRAPPER ================= */
+
+.hall-update-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 1rem;
+}
+
+/* ================= CARD ================= */
+
+.update-card {
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 500px;
+}
+
+.update-card h1 {
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+/* ================= FORM ================= */
+
+.update-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-group input {
+    padding: 0.65rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+/* Readonly styling */
+.readonly {
+    background-color: #f3f4f6;
+    color: #6b7280;
+}
+
+/* ================= BUTTONS ================= */
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.primary {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.primary:hover {
+    background-color: #2563eb;
+}
+
+.secondary {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.secondary:hover {
+    background-color: #d1d5db;
+}
+
+/* ================= MESSAGES ================= */
+
+.error {
+    color: #dc2626;
+    font-size: 0.9rem;
+}
+
+.success {
+    color: #16a34a;
+    font-size: 0.9rem;
+}

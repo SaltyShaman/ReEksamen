@@ -1,0 +1,126 @@
+/* ================= PAGE ================= */
+
+.seat-update-page {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+/* ================= CARD ================= */
+
+.seat-update-card {
+    width: 100%;
+    max-width: 500px;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.seat-update-card h1 {
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+/* ================= STATUS BADGES ================= */
+
+.status {
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    text-transform: uppercase;
+}
+
+/* Available */
+.status.available {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+/* Broken */
+.status.broken {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Maintenance */
+.status.maintenance {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+/* ================= FORM ================= */
+
+.form-group {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+select {
+    padding: 0.6rem;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 0.9rem;
+    background-color: #f9fafb;
+}
+
+select:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+/* ================= BUTTONS ================= */
+
+.form-actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+}
+
+button {
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+.primary {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.primary:hover {
+    background-color: #2563eb;
+}
+
+.secondary {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.secondary:hover {
+    background-color: #d1d5db;
+}
+
+/* ================= MESSAGES ================= */
+
+.error {
+    color: #dc2626;
+    margin-bottom: 1rem;
+}
+
+.success {
+    color: #16a34a;
+    margin-bottom: 1rem;
+}

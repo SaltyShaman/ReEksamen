@@ -4,6 +4,8 @@
     import { halls, initHallSocket } from "$lib/stores/halls.js";
     import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
     import { goto } from "$app/navigation";
+    import "./hall-search.css";
+
 
     let currentUser = null;
     let authChecked = false;
@@ -70,63 +72,83 @@
     }
 </script>
 
-<main>
+<main class="hall-search-page">
     {#if !authChecked}
         <p>Checking authentication...</p>
+
     {:else if !$isLoggedIn}
-        <p>You must log in to view this page.</p>
+        <p class="error">You must log in to view this page.</p>
+
     {:else if currentUser.role !== "ADMIN"}
-        <p>You are not authorized to view this page.</p>
+        <p class="error">You are not authorized to view this page.</p>
+
     {:else}
-        <h1>Search Halls (Admin)</h1>
+        <div class="hall-header">
+            <h1>Search Halls (Admin)</h1>
+
+            <button class="primary" on:click={() => goto("/halls/create")}>
+                + Create New Hall
+            </button>
+        </div>
 
         {#if errorMessage}
-            <p style="color:red">{errorMessage}</p>
+            <p class="error">{errorMessage}</p>
         {/if}
 
-        <!-- Create New Hall Button -->
-        <button on:click={() => goto("/halls/create")}>
-            Create New Hall
-        </button>
+        <div class="search-bar">
+            <input
+                type="text"
+                placeholder="Search halls by name..."
+                bind:value={$searchQuery}
+            />
+        </div>
 
-        <!-- Search Input -->
-        <input
-            type="text"
-            placeholder="Search halls by name..."
-            bind:value={$searchQuery}
-        />
+        <div class="table-wrapper">
+            <table class="hall-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Total Seats</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
 
-        <!-- Halls Table -->
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Total Seats</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each $filteredHalls as hall}
-                <tr>
-                    <td>{hall.id}</td>
-                    <td>{hall.name}</td>
-                    <td>{hall.total_seats}</td>
-                    <td>{hall.created_at}</td>
-                <td>
-                    <button on:click={() => goto(`/halls/${hall.id}/update`)}>Update</button>
-                    <button on:click={() => deleteHall(hall.id)}>Delete</button>
-                </td>
-                </tr>
-    {/each}
-    {#if $filteredHalls.length === 0}
-        <tr>
-            <td colspan="5">No halls found.</td>
-        </tr>
-    {/if}
-            </tbody>
+                <tbody>
+                    {#each $filteredHalls as hall}
+                        <tr>
+                            <td>{hall.id}</td>
+                            <td>{hall.name}</td>
+                            <td>{hall.total_seats}</td>
+                            <td>{hall.created_at}</td>
+                            <td class="actions">
+                                <button
+                                    class="secondary"
+                                    on:click={() => goto(`/halls/${hall.id}/update`)}
+                                >
+                                    Update
+                                </button>
 
-        </table>
+                                <button
+                                    class="danger"
+                                    on:click={() => deleteHall(hall.id)}
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    {/each}
+
+                    {#if $filteredHalls.length === 0}
+                        <tr>
+                            <td colspan="5" class="empty">
+                                No halls found.
+                            </td>
+                        </tr>
+                    {/if}
+                </tbody>
+            </table>
+        </div>
     {/if}
 </main>

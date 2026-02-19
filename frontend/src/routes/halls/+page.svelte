@@ -3,6 +3,8 @@
     import { halls, initHallSocket } from "$lib/stores/halls.js";
     import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
     import { goto } from "$app/navigation";
+    import "./hall-admin.css";
+
 
     let errorMessage = "";
     let currentUser = null;
@@ -56,59 +58,84 @@
     }
 
 </script>
-
-<main>
+<main class="hall-admin-page">
     {#if !authChecked}
         <p>Checking authentication...</p>
+
     {:else if !$isLoggedIn}
-        <p>You must log in to view this page.</p>
+        <p class="error">You must log in to view this page.</p>
+
     {:else if currentUser.role !== "ADMIN"}
-        <p>You are not authorized to view this page.</p>
+        <p class="error">You are not authorized to view this page.</p>
+
     {:else}
-        <h1>All Halls (Admin)</h1>
+        <div class="hall-header">
+            <h1>All Halls (Admin)</h1>
+
+            <button
+                class="primary"
+                on:click={() => goto(`/halls/create`)}
+            >
+                + Create New Hall
+            </button>
+        </div>
 
         {#if errorMessage}
-            <p style="color:red">{errorMessage}</p>
+            <p class="error">{errorMessage}</p>
         {/if}
 
-        <button on:click={() => goto(`/halls/create`)}>
-            Create new hall
-        </button>
-
-
-
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Total Seats</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each $halls as hall}
+        <div class="table-wrapper">
+            <table class="hall-table">
+                <thead>
                     <tr>
-                        <td>{hall.id}</td>
-                        <td>{hall.name}</td>
-                        <td>{hall.total_seats}</td>
-                        <td>{hall.created_at}</td>
-                        <td>
-                            <button on:click={() => deleteHall(hall.id)}>Delete</button>
-
-                            <button on:click={() => goto(`/halls/${hall.id}/update`)}>
-                                Update Hall name
-                            </button>
-
-                            <button on:click={() => goto(`/halls/${hall.id}/seats`)}>
-                                See hall seats
-                            </button>
-
-                        </td>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Total Seats</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
                     </tr>
-                {/each}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+    {#each $halls as hall}
+        <tr>
+            <td>{hall.id}</td>
+            <td>{hall.name}</td>
+            <td>{hall.total_seats}</td>
+            <td>{hall.created_at}</td>
+            <td class="actions">
+                <button
+                    class="danger"
+                    on:click={() => deleteHall(hall.id)}
+                >
+                    Delete
+                </button>
+
+                <button
+                    class="secondary"
+                    on:click={() => goto(`/halls/${hall.id}/update`)}
+                >
+                    Update
+                </button>
+
+                <button
+                    class="secondary"
+                    on:click={() => goto(`/halls/${hall.id}/seats`)}
+                >
+                    Seats
+                </button>
+            </td>
+        </tr>
+    {/each}
+
+    {#if $halls.length === 0}
+        <tr>
+            <td colspan="5" class="empty">
+                No halls found.
+            </td>
+        </tr>
     {/if}
+</tbody>
+</table>
+</div>
+{/if}
 </main>

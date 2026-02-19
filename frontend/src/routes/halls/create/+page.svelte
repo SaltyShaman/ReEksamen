@@ -3,6 +3,7 @@
     import { halls, initHallSocket } from "$lib/stores/halls.js";
     import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
     import { goto } from "$app/navigation";
+    import "./create-hall.css";
 
     let currentUser = null;
     let authChecked = false;
@@ -59,34 +60,66 @@
     }
 </script>
 
-<main>
+<main class="hall-create-page">
     {#if !authChecked}
         <p>Checking authentication...</p>
+
     {:else if !$isLoggedIn}
-        <p>You must log in to view this page.</p>
+        <p class="error">You must log in to view this page.</p>
+
     {:else if currentUser.role !== "ADMIN"}
-        <p>You are not authorized to view this page.</p>
+        <p class="error">You are not authorized to view this page.</p>
+
     {:else}
         <h1>Create New Hall</h1>
 
-        {#if errorMessage}<p style="color:red">{errorMessage}</p>{/if}
-        {#if successMessage}<p style="color:green">{successMessage}</p>{/if}
+        {#if errorMessage}
+            <p class="error">{errorMessage}</p>
+        {/if}
 
-        <form on:submit|preventDefault={createHall}>
-            <label>
-                Hall Name:
-                <input type="text" bind:value={hallName} placeholder="Enter hall name" required />
-            </label>
+        {#if successMessage}
+            <p class="success">{successMessage}</p>
+        {/if}
 
-            <label>
-                Total Seats:
-                <input type="number" bind:value={totalSeats} placeholder="Enter total seats" min="1" required />
-            </label>
+        <form on:submit|preventDefault={createHall} class="hall-form">
 
-            <button type="submit">Create Hall
+            <div class="form-group">
+                <label>Hall Name *</label>
+                <input
+                    type="text"
+                    bind:value={hallName}
+                    placeholder="Enter hall name"
+                    required
+                />
+            </div>
 
-            </button>
+            <div class="form-group">
+                <label>Total Seats *</label>
+                <input
+                    type="number"
+                    bind:value={totalSeats}
+                    min="1"
+                    placeholder="Enter total seats"
+                    required
+                />
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="primary">
+                    Create Hall
+                </button>
+
+                <button
+                    type="button"
+                    class="secondary"
+                    on:click={() => goto("/halls")}
+                >
+                    Cancel
+                </button>
+            </div>
+
         </form>
     {/if}
 </main>
+
 

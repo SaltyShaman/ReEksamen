@@ -4,6 +4,7 @@
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import { seats, loadSeatsForHall, initSeatSocket } from "$lib/stores/seats.js";
+  import "./seat-admin.css";
 
   let currentUser = null;
   let authChecked = false;
@@ -32,37 +33,66 @@
   }
 </script>
 
-<main>
+<main class="seat-admin-page">
   {#if !authChecked}
     <p>Checking authentication...</p>
+
   {:else if !$isLoggedIn}
-    <p>You must log in to view this page.</p>
+    <p class="error">You must log in to view this page.</p>
+
   {:else}
-    <h1>Seats in Hall {hallId}</h1>
+    <div class="seat-header">
+      <h1>Seats in Hall {hallId}</h1>
 
-    {#if errorMessage}<p style="color:red">{errorMessage}</p>{/if}
+      <button
+        class="secondary"
+        on:click={() => goto("/halls")}
+      >
+        ← Back to Halls
+      </button>
+    </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Seat #</th>
-          <th>Status</th>
-          {#if currentUser.role === "ADMIN"}<th>Actions</th>{/if}
-        </tr>
-      </thead>
-      <tbody>
-        {#each $seats[hallId] ?? [] as seat}
-        <tr>
-          <td>{seat.seat_number}</td>
-          <td>{seat.status}</td>
-          {#if currentUser.role === "ADMIN"}
+    {#if errorMessage}
+      <p class="error">{errorMessage}</p>
+    {/if}
+
+    <div class="table-wrapper">
+      <table class="seat-table">
+        <thead>
+          <tr>
+            <th>Seat #</th>
+            <th>Status</th>
+            {#if currentUser.role === "ADMIN"}
+              <th>Actions</th>
+            {/if}
+          </tr>
+        </thead>
+
+        <tbody>
+          {#each $seats[hallId] ?? [] as seat}
+          <tr>
+            <td>{seat.seat_number}</td>
+
             <td>
-              <button on:click={() => updateSeat(seat)}>Change Status</button>
+              <span class={`status ${seat.status.toLowerCase()}`}>
+                {seat.status}
+              </span>
             </td>
-          {/if}
-        </tr>
-        {/each}
-      </tbody>
-    </table>
+
+            {#if currentUser.role === "ADMIN"}
+              <td>
+                <button
+                  class="primary"
+                  on:click={() => updateSeat(seat)}
+                >
+                  Change Status
+                </button>
+              </td>
+            {/if}
+          </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
   {/if}
 </main>

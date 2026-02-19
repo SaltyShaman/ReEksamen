@@ -4,6 +4,7 @@
   import { goto } from "$app/navigation";
   import { initSeatSocket, loadSeat } from "$lib/stores/seats.js";
   import { authUser, isLoggedIn, fetchMe } from "$lib/stores/auth.js";
+  import "./seat-update.css";
 
   let hallId;
   let seatNumber;
@@ -90,38 +91,62 @@
     }
   }
 </script>
-
-<main>
+<main class="seat-update-page">
   {#if !authChecked}
     <p>Checking authentication...</p>
+
   {:else if !$isLoggedIn}
-    <p>You must log in to view this page.</p>
+    <p class="error">You must log in to view this page.</p>
+
   {:else if currentUser.role !== "ADMIN"}
-    <p>You are not authorized to view this page.</p>
+    <p class="error">You are not authorized to view this page.</p>
+
   {:else}
-    <h1>Update Seat #{seatNumber} Status</h1>
+    <div class="seat-update-card">
+      <h1>Update Seat #{seatNumber}</h1>
 
-    {#if errorMessage}<p style="color:red">{errorMessage}</p>{/if}
-    {#if successMessage}<p style="color:green">{successMessage}</p>{/if}
+      {#if errorMessage}
+        <p class="error">{errorMessage}</p>
+      {/if}
 
-    {#if seat}
-      <p>Current Status: <b>{currentStatus}</b></p>
+      {#if successMessage}
+        <p class="success">{successMessage}</p>
+      {/if}
 
-      <label>
-        New Status:
-        <select bind:value={newStatus}>
-          <option value="AVAILABLE">AVAILABLE</option>
-          <option value="BROKEN">BROKEN</option>
-          <option value="MAINTENANCE">MAINTENANCE</option>
-        </select>
-      </label>
+      {#if seat}
+        <div class="seat-info">
+          <p>
+            Current Status:
+            <span class={`status ${currentStatus.toLowerCase()}`}>
+              {currentStatus}
+            </span>
+          </p>
+        </div>
 
-      <div>
-        <button on:click={updateSeatStatus}>Update</button>
-        <button on:click={() => goto(`/halls/${hallId}/seats`)}>Cancel</button>
-      </div>
-    {:else if !errorMessage}
-      <p>Loading seat information...</p>
-    {/if}
+        <div class="form-group">
+          <label>New Status</label>
+          <select bind:value={newStatus}>
+            <option value="AVAILABLE">AVAILABLE</option>
+            <option value="BROKEN">BROKEN</option>
+            <option value="MAINTENANCE">MAINTENANCE</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button class="primary" on:click={updateSeatStatus}>
+            Update Status
+          </button>
+
+          <button
+            class="secondary"
+            on:click={() => goto(`/halls/${hallId}/seats`)}
+          >
+            Cancel
+          </button>
+        </div>
+      {:else if !errorMessage}
+        <p>Loading seat information...</p>
+      {/if}
+    </div>
   {/if}
 </main>
