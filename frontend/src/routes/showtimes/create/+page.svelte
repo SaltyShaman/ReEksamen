@@ -34,18 +34,19 @@
             halls.set(data.halls);
         }
 
-        // Load movies
-        if ($movies.length === 0) {
-            const res = await fetch("http://localhost:8080/movies", { credentials: "include" });
-            const data = await res.json();
-            movies.set(data.movies);
-        }
-    });
+        // Always load movies
+        const movieRes = await fetch("http://localhost:8080/movies", {
+            credentials: "include"
+        });
+        const movieData = await movieRes.json();
+        movies.set(movieData.movies ?? []);
+        });
 
     // filtered movies based on search
     $: filteredMovies = $movies.filter(m =>
-        m.title.toLowerCase().includes(movieSearch.toLowerCase())
+     m?.title?.toLowerCase()?.includes(movieSearch.toLowerCase())
     );
+
 async function handleCreate() {
     errorMessage = "";
     successMessage = "";

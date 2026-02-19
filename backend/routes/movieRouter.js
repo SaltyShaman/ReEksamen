@@ -57,13 +57,11 @@ router.get("/:movieId", async (req, res) => {
 router.post("/", requireLogin, requireAdmin, async (req, res) => {
     const { title, description, duration_minutes, release_date } = req.body;
 
-    // Validate required fields
     if (!title || !duration_minutes) {
         return res.status(400).json({ error: "Title and duration are required" });
     }
 
     try {
-        // Insert into database
         const result = await db.run(
             `INSERT INTO movies (title, description, duration_minutes, release_date)
              VALUES (?, ?, ?, ?)`,
@@ -72,18 +70,28 @@ router.post("/", requireLogin, requireAdmin, async (req, res) => {
 
         const newMovieId = result.lastID;
 
-        // Emit socket event for real-time updates
-        emitMovieCreated(newMovieId);
+        // 🔥 Fetch FULL movie object
+        const newMovie = await db.get(
+            `SELECT id, title, description, duration_minutes, release_date, created_at
+             FROM movies
+             WHERE id = ?`,
+            [newMovieId]
+        );
+
+        // 🔥 Emit FULL object (not just ID)
+        emitMovieCreated(newMovie);
 
         res.status(201).json({
             id: newMovieId,
             message: "Movie created successfully"
         });
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Failed to create movie" });
     }
 });
+
 
 
 // DELETE /movies/:id → delete a movie
