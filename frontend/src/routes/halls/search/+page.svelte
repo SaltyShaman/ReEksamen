@@ -84,7 +84,6 @@
 
     {:else}
         <div class="hall-header">
-            <h1>Search Halls (Admin)</h1>
 
             <button class="primary" on:click={() => goto("/halls/create")}>
                 + Create New Hall

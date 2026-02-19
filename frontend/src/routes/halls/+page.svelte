@@ -70,7 +70,6 @@
 
     {:else}
         <div class="hall-header">
-            <h1>All Halls (Admin)</h1>
 
             <button
                 class="primary"
